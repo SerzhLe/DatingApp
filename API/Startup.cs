@@ -1,8 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using API.Data;
+using API.Interfaces;
+using API.Services;
+using API.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace API
@@ -30,17 +36,19 @@ namespace API
         //Inside this method the ordering is not necessary
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-            });
+            //inside this method there were too many add services - we cut some of them and paste in extension method in ApplicationServiceExtensions
+            services.AddApplicationServices(_config); //this customized method in ApplicationServiceExtensions
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv5", Version = "v1" });
             });
             services.AddCors(); //add CORS to allow http requests use our API
+
+            services.AddIdentityServices(_config); //it is also extension customized method 
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         //In this method ordering is VERY IMPORTANT
@@ -60,6 +68,7 @@ namespace API
             //very important place it after Routing
             app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 
+            app.UseAuthentication(); //important to place here!
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
