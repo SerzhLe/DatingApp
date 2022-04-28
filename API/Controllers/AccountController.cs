@@ -29,7 +29,7 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
             //we want the username to be unique
-            if (await UserExists(registerDto.UserName)) return BadRequest("Username already exists."); //ActionResult return any of HTTP status codes
+            if (await UserExists(registerDto.UserName)) return BadRequest("Username already exists"); //ActionResult return any of HTTP status codes
 
             using var hmac = new HMACSHA512(); //creates a hash object. We use 'using' because this class has Dispose()
 
@@ -64,7 +64,7 @@ namespace API.Controllers
 
             for (int i = 0; i < computedHash.Length; i++)
             {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password.");
+                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
             }
 
             return new UserDto() { UserName = loginDto.UserName, Token = _tokenService.CreateToken(user) };
