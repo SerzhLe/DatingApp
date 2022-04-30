@@ -20,12 +20,15 @@ export class NavComponent implements OnInit {
   }
 
   login() {
-    this.accountService.login(this.model).subscribe(response => {
-      console.log(response);
-      this.router.navigateByUrl('/members'); //navigate to members element when logged in
-    }, error => {
+    this.accountService.login(this.model).subscribe({
+      next: response => {
+        console.log(response);
+        this.router.navigateByUrl('/members'); //navigate to members element when logged in
+      },
+      error: error => {
       console.log(error);
       this.toastr.error(error.error);
+      }
     }); //if returns Observable - we need subscribe to apply changes
   }
 

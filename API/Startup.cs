@@ -19,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using API.Middleware;
 
 namespace API
 {
@@ -38,7 +39,7 @@ namespace API
         {
             //inside this method there were too many add services - we cut some of them and paste in extension method in ApplicationServiceExtensions
             services.AddApplicationServices(_config); //this customized method in ApplicationServiceExtensions
-            
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -56,10 +57,14 @@ namespace API
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
+                //     app.UseDeveloperExceptionPage(); //throw exceptions to the app if needed
+                app.UseSwagger(); //this is a tool like a Postman
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
             }
+
+            //instead of UseDeveloperExceptionPage that causes the exceptions - we use our own
+            app.UseMiddleware<ExceptionMiddleware>(); //when we get an exception it will be carried out by our ExceptionMiddleware
+
 
             app.UseHttpsRedirection();
 
