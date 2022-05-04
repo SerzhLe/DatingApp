@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ToastrModule } from 'ngx-toastr';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { PinkToast } from '../_toasts/pink.toast';
-
-
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 
 @NgModule({
   declarations: [
@@ -15,11 +15,15 @@ import { PinkToast } from '../_toasts/pink.toast';
     ToastrModule.forRoot({
       toastComponent: PinkToast,
       positionClass: "toast-bottom-right",
-    })
+    }),
+    TabsModule.forRoot(),
+    NgxGalleryModule
   ],
   exports: [
     BsDropdownModule,
-    ToastrModule
+    ToastrModule,
+    TabsModule,
+    NgxGalleryModule
   ]
 })
 export class SharedModule { }

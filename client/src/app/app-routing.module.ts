@@ -15,7 +15,7 @@ const routes: Routes = [
   //make an general rule for all these components
   {path: '', runGuardsAndResolvers: 'always', canActivate: [AuthGuard], children: [
     {path: 'members', component: MemberListComponent},
-    {path: 'members/:id', component: MemberDetailComponent}, //.../members/(can be 1, 2, or 3...)
+    {path: 'members/:username', component: MemberDetailComponent}, //.../members/(can be 1, 2, or 3...)
     {path: 'lists', component: ListsComponent},
     {path: 'messages', component: MessagesComponent}
   ]},
