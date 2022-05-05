@@ -32,7 +32,7 @@ import {
     `],
     template: `
     <div class="row" [style.display]="state.value === 'inactive' ? 'none' : ''">
-      <div class="col-9">
+      <div class="col-12">
         <div>
           {{ title }}
         </div>

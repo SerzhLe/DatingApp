@@ -1,2 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 .ngx-gallery { display: inline-block; margin-bottom: 20px; }
+
+@media screen and (min-width: 1400px) {
+    .container {
+        max-width: 1140px;
+    }
+}
