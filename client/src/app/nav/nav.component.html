@@ -40,10 +40,15 @@
         </ul>
         <div
           style="cursor: pointer"
-          class="dropdown"
+          class="dropdown d-flex align-items-center"
           *ngIf="accountService.currentUser$ | async as user"
           dropdown
         >
+          <img
+            [src]="user.photoUrl || '../../assets/user.png'"
+            alt="User Main Photo"
+            class="rounded-circle user-avatar"
+          />
           <!-- now we can use User object because of "as"-->
           <a class="nav-link dropdown-toggle text-light" dropdownToggle
             >Welcome, {{ user.userName }}!</a

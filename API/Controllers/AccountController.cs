@@ -67,7 +67,12 @@ namespace API.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
             }
 
-            return new UserDto() { UserName = loginDto.UserName, Token = _tokenService.CreateToken(user) };
+            return new UserDto()
+            {
+                UserName = loginDto.UserName,
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.SingleOrDefault(photo => photo.IsMain)?.Url //will be lazy loaded
+            };
         }
 
         private async Task<bool> UserExists(string username)

@@ -46,4 +46,5 @@ export class MemberEditComponent implements OnInit {
       this.editForm.reset(this.member); //to apply changes to member on client side - also needed to add changes on server
     });
   }
+
 }
