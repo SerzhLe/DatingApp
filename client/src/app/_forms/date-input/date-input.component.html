@@ -1,0 +1,23 @@
+<div class="form-group mb-2">
+  <div class="input-icons">
+    <i
+      class="fa fa-calendar"
+      [ngClass]="{ 'move-left': ngControl.touched }"
+    ></i>
+    <input
+      type="text"
+      [class.is-valid]="ngControl.touched && ngControl.valid"
+      [class.is-invalid]="ngControl.touched && !ngControl.valid"
+      class="form-control"
+      [formControl]="ngControl.control"
+      placeholder="{{ label }}"
+      bsDatepicker
+      [bsConfig]="bsConfig"
+      [maxDate]="maxDate"
+    />
+    <div class="valid-feedback">Success! You've done it.</div>
+    <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">
+      Please, choose a {{ label }}
+    </div>
+  </div>
+</div>

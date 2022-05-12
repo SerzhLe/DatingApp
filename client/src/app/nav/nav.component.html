@@ -46,12 +46,12 @@
         >
           <img
             [src]="user.photoUrl || '../../assets/user.png'"
-            alt="User Main Photo"
+            [alt]="user.knownAs"
             class="rounded-circle user-avatar"
           />
           <!-- now we can use User object because of "as"-->
           <a class="nav-link dropdown-toggle text-light" dropdownToggle
-            >Welcome, {{ user.userName }}!</a
+            >Welcome, {{ user.knownAs }}!</a
           >
           <div class="dropdown-menu" *dropdownMenu>
             <a class="dropdown-item" routerLink="/member/edit">Edit Profile</a>

@@ -1,8 +1,7 @@
-.card-body {
-    white-space: nowrap;
-}
-
 .btn {
     padding: 0.5rem 1rem;
 }
 
+.member-card {
+    max-height: 300px;
+}

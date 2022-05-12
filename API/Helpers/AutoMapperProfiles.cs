@@ -20,6 +20,7 @@ namespace API.Helpers
             //for member - custome configuration to set url from photo to photoUrl in User entity
             CreateMap<Photo, PhotoDto>();
             CreateMap<MemberUpdateDto, AppUser>();
+            CreateMap<RegisterDto, AppUser>();
         }
     }
 }

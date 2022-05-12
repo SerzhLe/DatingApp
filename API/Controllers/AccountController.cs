@@ -8,6 +8,7 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,8 +18,10 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
-        public AccountController(DataContext context, ITokenService tokenService)
+        private readonly IMapper _mapper;
+        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
         {
+            _mapper = mapper;
             _tokenService = tokenService;
             _context = context;
         }
@@ -31,19 +34,23 @@ namespace API.Controllers
             //we want the username to be unique
             if (await UserExists(registerDto.UserName)) return BadRequest("Username already exists"); //ActionResult return any of HTTP status codes
 
+            var user = _mapper.Map<RegisterDto, AppUser>(registerDto);
+
             using var hmac = new HMACSHA512(); //creates a hash object. We use 'using' because this class has Dispose()
 
-            var user = new AppUser()
-            {
-                UserName = registerDto.UserName,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)), //we generate byte[] of password string and compute hash value
-                PasswordSalt = hmac.Key //byte[]
-            };
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)); //we generate byte[] of password string and compute hash value
+            user.PasswordSalt = hmac.Key; //byte[]
 
             _context.Users.Add(user);
+
             await _context.SaveChangesAsync();
 
-            return new UserDto() { UserName = registerDto.UserName, Token = _tokenService.CreateToken(user) };
+            return new UserDto() 
+            { 
+                UserName = user.UserName, 
+                Token = _tokenService.CreateToken(user),
+                KnownAs = user.KnownAs
+            };
         }
         //in this method we use two parameters and return user object (with its id and password) - Not a good realization!
         //that's why we need to use DTO pattern - Data transfer object
@@ -69,9 +76,10 @@ namespace API.Controllers
 
             return new UserDto()
             {
-                UserName = loginDto.UserName,
+                UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
-                PhotoUrl = user.Photos.SingleOrDefault(photo => photo.IsMain)?.Url //will be lazy loaded
+                PhotoUrl = user.Photos.SingleOrDefault(photo => photo.IsMain)?.Url, //will be lazy loaded
+                KnownAs = user.KnownAs
             };
         }
 

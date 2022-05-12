@@ -1,0 +1,14 @@
+.input-icons {
+    position: relative;
+}
+
+.input-icons i {
+    position: absolute;
+    top: 1rem; 
+    right: 1rem; 
+    z-index: -1;
+}
+
+.move-left {
+    right: 3rem !important;
+}
