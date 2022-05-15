@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Extensions;
 using System.Data.Entity;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -32,11 +33,24 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetAllUsers() //https://localhost:5001/api/users
+        //we are going to send http request with quesry string - because this calss marked with Api attribute 
+        //- it will recognise query string as object of UserParams class
+        //we add help apicontroller by passing [FromQuery] - to indicate that this obj UserParams will be added with query string in http request
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetAllUsers([FromQuery] UserParams userParams) //https://localhost:5001/api/users
         {
-            //when calling database - ALWAYS use asynchronous
+            var user = await _userRepository.GetUserByUsernameAsync(User.GetCurrentUserName());
 
-            return Ok(await _userRepository.GetMembersAsync()); //used Ok() to return ActionResult
+            userParams.CurrentUserName = user.UserName;
+
+            if (string.IsNullOrEmpty(userParams.Gender))
+                userParams.Gender = user.Gender == "male" ? "female" : "male";
+
+            //when calling database - ALWAYS use asynchronous
+            var users = await _userRepository.GetMembersAsync(userParams);
+
+            Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+
+            return Ok(users); //used Ok() to return ActionResult
 
             //with Include it will return a user with an object photo that include user object with photo object and that will
             //be cyclical reference - SOLUTION - adding DTO (member - user. And member return PhotoDto)

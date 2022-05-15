@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { PageChangedEvent, PaginationComponent } from 'ngx-bootstrap/pagination';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Member } from 'src/app/_models/member';
+import { PaginatedResult, Pagination } from 'src/app/_models/pagination';
+import { User } from 'src/app/_models/user';
+import { UserParams } from 'src/app/_models/userParams';
+import { AccountService } from 'src/app/_services/account.service';
 import { MembersService } from 'src/app/_services/members.service';
 
 @Component({
@@ -8,12 +14,46 @@ import { MembersService } from 'src/app/_services/members.service';
   templateUrl: './member-list.component.html',
   styleUrls: ['./member-list.component.css']
 })
-export class MemberListComponent implements OnInit {
-  members$: Observable<Member[]>;
+export class MemberListComponent implements OnInit, OnDestroy {
+  members: Member[];
+  pagination: Pagination;
+  userParams: UserParams;
+  user: User;
+  genderList = [{value: 'male', display: 'Males'}, {value: 'female', display: 'Females'}]
+  orderByList = [{value: 'lastActive', display: 'Last Active'}, {value: 'created', display: 'Created Profile'}]
 
-  constructor(private memberService: MembersService) { }
+  constructor(private memberService: MembersService, private accountService: AccountService) { 
+    this.accountService.currentUser$.pipe(take(1)).subscribe(response => {
+      this.user = response;
+      if(!this.memberService.userParams)  this.memberService.userParams = new UserParams(this.user);
+    })
+   }
+   
+   //constructor calls first, than calls ngOnInit()!
 
-  ngOnInit(): void {
-    this.members$ = this.memberService.getMembers();
+   ngOnInit(): void {
+     this.userParams = this.memberService.userParams;
+     this.loadMembers();
+    }
+
+    ngOnDestroy(): void {
+      this.memberService.userParams = this.userParams;
+    }
+
+  loadMembers() {
+    this.memberService.getMembers(this.userParams).subscribe(response => {
+      this.members = response.result;
+      this.pagination = response.pagination;
+    });
+    //we do not add pipe and take(1) because it is http response and it is completed once we subscribe
+  }
+
+  resetFilters() {
+    this.userParams = new UserParams(this.user);
+  }
+
+  pageChanged(event: PageChangedEvent) {
+    this.userParams.pageNumber = event.page;
+    this.loadMembers();
   }
 }

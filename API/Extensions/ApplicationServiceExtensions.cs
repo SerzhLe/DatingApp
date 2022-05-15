@@ -24,6 +24,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>(); //add specific service and it disposes when specific http request ends
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<LogUserActivity>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options =>
             {

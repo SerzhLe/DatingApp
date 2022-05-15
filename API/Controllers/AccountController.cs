@@ -45,11 +45,12 @@ namespace API.Controllers
 
             await _context.SaveChangesAsync();
 
-            return new UserDto() 
-            { 
-                UserName = user.UserName, 
+            return new UserDto()
+            {
+                UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
-                KnownAs = user.KnownAs
+                KnownAs = user.KnownAs,
+                Gender = user.Gender
             };
         }
         //in this method we use two parameters and return user object (with its id and password) - Not a good realization!
@@ -79,7 +80,8 @@ namespace API.Controllers
                 UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
                 PhotoUrl = user.Photos.SingleOrDefault(photo => photo.IsMain)?.Url, //will be lazy loaded
-                KnownAs = user.KnownAs
+                KnownAs = user.KnownAs,
+                Gender = user.Gender
             };
         }
 

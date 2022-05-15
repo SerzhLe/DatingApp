@@ -1,3 +1,21 @@
 .col-2 {
     width: 20%;
 }
+
+.form-group .age-label {
+    width: 80%;
+}
+
+
+.filter-form button {
+    height: 60px;
+}
+
+.age-and-descending-form {
+    position: relative;
+}
+
+.age-and-descending-form .form-check {
+    position: absolute;
+    white-space: nowrap;
+}

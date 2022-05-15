@@ -39,24 +39,26 @@
           </li>
         </ul>
         <div
-          style="cursor: pointer"
-          class="dropdown d-flex align-items-center"
           *ngIf="accountService.currentUser$ | async as user"
-          dropdown
+          class="d-flex align-items-center"
         >
           <img
             [src]="user.photoUrl || '../../assets/user.png'"
-            [alt]="user.knownAs"
+            [alt]="user.username"
             class="rounded-circle user-avatar"
           />
-          <!-- now we can use User object because of "as"-->
-          <a class="nav-link dropdown-toggle text-light" dropdownToggle
-            >Welcome, {{ user.knownAs }}!</a
-          >
-          <div class="dropdown-menu" *dropdownMenu>
-            <a class="dropdown-item" routerLink="/member/edit">Edit Profile</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" (click)="logout()">Logout</a>
+          <div style="cursor: pointer" class="dropdown" dropdown>
+            <!-- now we can use User object because of "as"-->
+            <a class="nav-link dropdown-toggle text-light" dropdownToggle
+              >Welcome, {{ user.knownAs }}!</a
+            >
+            <div class="dropdown-menu" *dropdownMenu>
+              <a class="dropdown-item" routerLink="/member/edit"
+                >Edit Profile</a
+              >
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" (click)="logout()">Logout</a>
+            </div>
           </div>
         </div>
         <form
