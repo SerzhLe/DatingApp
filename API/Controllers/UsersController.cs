@@ -25,8 +25,11 @@ namespace API.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
-        public UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService)
+        private readonly ILikesRepository _likesRepository;
+        public UsersController(IUserRepository userRepository, IMapper mapper, 
+            IPhotoService photoService, ILikesRepository likesRepository)
         {
+            _likesRepository = likesRepository;
             _photoService = photoService;
             _mapper = mapper;
             _userRepository = userRepository;
@@ -47,6 +50,14 @@ namespace API.Controllers
 
             //when calling database - ALWAYS use asynchronous
             var users = await _userRepository.GetMembersAsync(userParams);
+
+            var likes = await _likesRepository.GetAllUserLikesAsync("liked", user.Id);
+
+            foreach (var member in users) //to find what users are liked
+            {
+                if (likes.SingleOrDefault(u => u.LikedUserId == member.Id) != null)
+                    member.IsLiked = true;
+            }
 
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 

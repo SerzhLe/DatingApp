@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PageChangedEvent, PaginationComponent } from 'ngx-bootstrap/pagination';
-import { Observable } from 'rxjs';
+import { PageChangedEvent } from 'ngx-bootstrap/pagination';
 import { take } from 'rxjs/operators';
 import { Member } from 'src/app/_models/member';
-import { PaginatedResult, Pagination } from 'src/app/_models/pagination';
+import { Pagination } from 'src/app/_models/pagination';
 import { User } from 'src/app/_models/user';
 import { UserParams } from 'src/app/_models/userParams';
 import { AccountService } from 'src/app/_services/account.service';
@@ -37,7 +36,8 @@ export class MemberListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-      this.memberService.userParams = this.userParams;
+      if (localStorage.getItem('user')) 
+        this.memberService.userParams = this.userParams; //this method calls AFTER the logout method
     }
 
   loadMembers() {

@@ -4,6 +4,7 @@ import { ReplaySubject } from 'rxjs';
 import {map} from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../_models/user';
+import { MembersService } from './members.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class AccountService {
   private currentUserSource = new ReplaySubject<User>(1); //buffer for storing User object - 1 amount - size of buffer
   currentUser$ = this.currentUserSource.asObservable();//as it will be an observable - it should have '$' at the end
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private memberService: MembersService) { }
 
   login(model: any) {
     return this.http.post(this.baseUrl + 'account/login', model).pipe(
@@ -43,6 +44,9 @@ export class AccountService {
 
   logout() {
     localStorage.removeItem('user');
+    this.memberService.memberCache = new Map();
+    this.memberService.loggedInMember = null;
+    this.memberService.userParams = null;
     this.currentUserSource.next(null);
   }
 

@@ -1,11 +1,12 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { stringify } from 'querystring';
 import { of, scheduled } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { LikesParams } from '../_models/likesParams';
 import { Member } from '../_models/member';
 import { PaginatedResult } from '../_models/pagination';
-import { Photo } from '../_models/photo';
 import { UserParams } from '../_models/userParams';
 
 
@@ -14,7 +15,9 @@ import { UserParams } from '../_models/userParams';
 })
 export class MembersService {
   private baseUrl = environment.apiUrl;
-  member: Member;
+
+  loggedInMember: Member;
+
   memberCache = new Map(); //like a dictionary: key - value pair
   private key: string;
   userParams: UserParams;
@@ -39,7 +42,12 @@ export class MembersService {
     params = params.append('orderIsDescending', userParams.orderIsDescending);
 
     //when we just http.get - then we just get response body, when add 'observe': 'response' -  we get all http response and add params
-    return this.getPaginatedResult<Member[]>(this.baseUrl + 'users', params);
+    return this.getPaginatedResult<Member[]>(this.baseUrl + 'users', params).pipe(
+      map(result => {
+        this.memberCache.set(this.key, result);
+        return result;
+      })
+    );
   }
 
   private getPaginatedResult<T>(url: string, params: HttpParams) {
@@ -51,8 +59,6 @@ export class MembersService {
         if (response.headers.get('Pagination') !== null) {
           paginatedResult.pagination = JSON.parse(response.headers.get('Pagination'));
         }
-
-        this.memberCache.set(this.key, paginatedResult);
         return paginatedResult;
       })
     );
@@ -66,7 +72,9 @@ export class MembersService {
   }
 
   getMember(username: string) {
-    const member = this.memberCache.get(this.key)?.result?.find((m: Member) => m.userName === username);
+    const member = [...this.memberCache.values()]
+      .reduce((arr, elem) => arr.concat(elem.result), [])
+      .find((member: Member) => member.userName === username);
 
     if (member) return of(member);
 
@@ -74,10 +82,10 @@ export class MembersService {
   }
 
   getLoggedInMember(username: string) {
-    if (this.member) return of(this.member);
+    if (this.loggedInMember) return of(this.loggedInMember);
 
     return this.http.get<Member>(this.baseUrl + 'users/' + username).pipe(
-      map(response => this.member = response)
+      map(response => this.loggedInMember = response)
     );
   }
 
@@ -92,4 +100,33 @@ export class MembersService {
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + "users/delete-photo/" + photoId);
   }
+
+  addLike(username: string) {
+    return this.http.post(this.baseUrl + 'likes/' + username, {}).pipe(
+      map(() => {
+        var resultBody = this.memberCache.get(this.key)?.result;
+        var member = resultBody.find((member: Member) => member.userName === username);
+        if (member) member.isLiked = true;
+      })
+    );
+  }
+
+  addDisLike(username: string) {
+    return this.http.post(this.baseUrl + 'likes/undo/' + username, {}).pipe(
+      map(() => {
+        var resultBody = this.memberCache.get(this.key)?.result;
+        var member = resultBody.find((member: Member) => member.userName === username);
+        if (member) member.isLiked = false;
+      })
+    );
+  }
+
+  getLikes(likesParams: LikesParams) { 
+    let params = this.getPaginationHeader(likesParams.pageNumber, likesParams.pageSize);
+
+    params = params.append('predicate', likesParams.predicate);
+
+    return this.getPaginatedResult<Member[]>(this.baseUrl + 'likes', params);
+  }
+
 }

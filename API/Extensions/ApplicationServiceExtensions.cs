@@ -24,13 +24,12 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>(); //add specific service and it disposes when specific http request ends
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ILikesRepository, LikesRepository>();
             services.AddScoped<LogUserActivity>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options =>
             {
-                options
-                    .UseLazyLoadingProxies()
-                    .UseSqlite(config.GetConnectionString("DefaultConnection"));
+                options.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
 
             return services;

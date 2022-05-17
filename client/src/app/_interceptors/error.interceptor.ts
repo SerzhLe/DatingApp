@@ -31,12 +31,19 @@ export class ErrorInterceptor implements HttpInterceptor {
                 throw modalStateErrors.flat(); //this is used to show errors below the inputs - if u wan to use flat() - specify in tsconfig.json "es2019" 
               //flat - if we do not use flat thatn we goet array of arrays but because of flat we got array of strings
               }
-              else {
+              else if (typeof(error.error) === 'object') {
                 this.toastr.error(error.statusText === 'OK' ? 'Bad Request' : error.statusText, error.status);
+              } else {
+                this.toastr.error(error.error);
               }
               break;
             case 401:
-              this.toastr.error(error.statusText === 'OK' ? 'Unauthorized' : error.statusText, error.status);
+              if (typeof(error.error) === 'object') {
+                this.toastr.error(error.statusText === 'OK' ? 'Unauthorized' : error.statusText, error.status);
+              }
+              else {
+                this.toastr.error(error.error);
+              }
               break;
             case 404:
               this.router.navigateByUrl('/not-found');

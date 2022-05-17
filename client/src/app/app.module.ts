@@ -25,6 +25,7 @@ import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
 import { TextInputComponent } from './_forms/text-input/text-input.component';
 import { DateInputComponent } from './_forms/date-input/date-input.component';
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { DateInputComponent } from './_forms/date-input/date-input.component';
     BrowserAnimationsModule,
     FormsModule, //forms in Angular
     SharedModule, //this modul consists of components
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ButtonsModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}, //Now each error will be handled by ErrorInterceptor
