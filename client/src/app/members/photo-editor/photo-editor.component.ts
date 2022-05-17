@@ -85,6 +85,7 @@ export class PhotoEditorComponent implements OnInit {
     this.memberService.deletePhoto(photo.id).subscribe(() => {
       const index = this.member.photos.indexOf(photo);
       this.member.photos.splice(index, 1);
+      this.toastr.success("You successfully deleted the photo!")
     })
   }
 

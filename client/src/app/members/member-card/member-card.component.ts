@@ -12,6 +12,7 @@ import { MembersService } from 'src/app/_services/members.service';
 })
 export class MemberCardComponent implements OnInit {
   @Input() member: Member;
+  @Input() showLikeButton: boolean = true;
 
   constructor(private memberService: MembersService, private toastr: ToastrService) { }
 

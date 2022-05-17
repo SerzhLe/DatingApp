@@ -14,7 +14,7 @@
           <i class="fa fa-user"></i>
         </button>
       </li>
-      <li class="list-inline-item">
+      <li class="list-inline-item" *ngIf="showLikeButton">
         <button
           class="btn"
           [ngClass]="member.isLiked ? 'btn-primary' : 'btn-outline-primary'"
