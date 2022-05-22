@@ -1,4 +1,4 @@
-<div class="row" *ngIf="member">
+<div class="row">
   <div class="col-4">
     <div class="card mb-1">
       <img
@@ -27,33 +27,58 @@
       </div>
       <div class="card-footer">
         <div class="btn-group d-flex">
-          <button class="btn btn-primary">Like</button>
-          <button class="btn btn-danger">Message</button>
+          <button
+            class="btn btn-primary"
+            (click)="member.isLiked ? deleteLike() : addLike()"
+          >
+            {{ member.isLiked ? "Unlike" : "Like" }}
+          </button>
+          <button class="btn btn-danger" (click)="selectTab(3)">Message</button>
         </div>
       </div>
     </div>
   </div>
   <div class="col-8 p-3">
-    <tabset>
-      <tab heading="About {{ member.knownAs }}" id="tab1" class="pb-2">
+    <tabset #memberTabs>
+      <tab
+        heading="About {{ member.knownAs }}"
+        id="tab1"
+        class="pb-2"
+        (selectTab)="onTabActivated($event)"
+      >
+        <!-- Now when we select the tab - it calls onTabActivated() and if tab heading is Messages - then load messages -->
         <h4 class="mt-2">Description</h4>
         <p>{{ member.introduction }}</p>
-        <h4>Looking for</h4>
+        <p *ngIf="!member.introduction">
+          My description is empty yet.. but I'll take care of it soon!=)
+        </p>
+        <h4 class="mt-3">Looking for</h4>
         <p>{{ member.lookingFor }}</p>
+        <p *ngIf="!member.lookingFor">
+          I'm looking for... hmmm. I'll share you soon!=)
+        </p>
       </tab>
-      <tab heading="Interests">
+      <tab heading="Interests" (selectTab)="onTabActivated($event)">
         <h4 class="mt-2">Interests</h4>
         <p>{{ member.interests }}</p>
+        <p *ngIf="!member.interests">
+          Sorry, I haven't listed all my hobbys yet..
+        </p>
       </tab>
-      <tab heading="Photos"
+      <tab heading="Photos" (selectTab)="onTabActivated($event)"
         ><ngx-gallery
           [options]="galleryOptions"
           [images]="galleryImages"
           class="ngx-gallery pt-2"
         ></ngx-gallery
       ></tab>
-      <tab heading="Messages">
-        <p class="mt-2">Messages will go here</p>
+      <tab heading="Messages" (selectTab)="onTabActivated($event)">
+        <!-- We want construct this component ONLY when user clicks on tab Messages. 
+          By default - when constructs parent (this comp) - constructs also a child -->
+        <app-member-messages
+          [messages]="messages"
+          [recipientUserName]="member.userName"
+        ></app-member-messages>
       </tab>
     </tabset>
   </div>

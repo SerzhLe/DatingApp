@@ -12,18 +12,28 @@
   <div class="row">
     <div class="btn-group small-btn" name="predicate">
       <button
-        class="btn-primary btn"
+        class="btn"
         btnRadio="liked"
         [(ngModel)]="likesParams.predicate"
+        [ngClass]="
+          likesParams.predicate === 'liked'
+            ? 'btn-custom-primary-active'
+            : 'btn-custom-primary'
+        "
         (click)="loadLikes()"
       >
         <!-- btnRadio needs ButtonsModule from ngx-bootstrap/buttons-->
         Members I Like
       </button>
       <button
-        class="btn-primary btn"
+        class="btn btn-custom-primary"
         btnRadio="likedBy"
         [(ngModel)]="likesParams.predicate"
+        [ngClass]="
+          likesParams.predicate === 'likedBy'
+            ? 'btn-custom-primary-active'
+            : 'btn-custom-primary'
+        "
         (click)="loadLikes()"
       >
         Members who like me
@@ -38,6 +48,7 @@
         [member]="member"
       ></app-member-card>
     </div>
+    <h3 *ngIf="members?.length <= 0 && !loading">No members yet.. =(</h3>
   </div>
 </div>
 

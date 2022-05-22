@@ -1,1 +1,122 @@
-<p>messages works!</p>
+<div class="row">
+  <div class="btn-group" name="container">
+    <button
+      class="btn"
+      [(ngModel)]="container"
+      [ngClass]="
+        container === 'Unread'
+          ? 'btn-custom-secondary-active'
+          : 'btn-custom-secondary'
+      "
+      name="container"
+      btnRadio="Unread"
+      (click)="loadMessages()"
+    >
+      <i class="fa fa-envelope"></i>
+      Unread
+    </button>
+    <button
+      class="btn"
+      [(ngModel)]="container"
+      [ngClass]="
+        container === 'Inbox'
+          ? 'btn-custom-secondary-active'
+          : 'btn-custom-secondary'
+      "
+      name="container"
+      btnRadio="Inbox"
+      (click)="loadMessages()"
+    >
+      <i class="fa fa-envelope-open"></i>
+      Inbox
+    </button>
+    <button
+      class="btn"
+      [(ngModel)]="container"
+      [ngClass]="
+        container === 'Outbox'
+          ? 'btn-custom-secondary-active'
+          : 'btn-custom-secondary'
+      "
+      name="container"
+      btnRadio="Outbox"
+      (click)="loadMessages()"
+    >
+      <i class="fa fa-paper-plane"></i>
+      Outbox
+    </button>
+  </div>
+</div>
+
+<div class="row mt-3" *ngIf="messages?.length <= 0 && !loading">
+  <h3 *ngIf="messages?.length <= 0 && !loading">No Messages</h3>
+</div>
+
+<div class="row mt-3" *ngIf="messages?.length > 0">
+  <table class="table table-hover message-table">
+    <tr>
+      <th class="table-column-40 text-center">Message</th>
+      <th class="table-column-20">From / To</th>
+      <th class="table-column-20">Sent / Received</th>
+      <th class="table-column-20 text-center">Action</th>
+    </tr>
+    <tr
+      [hidden]="loading"
+      *ngFor="let message of messages"
+      routerLink="{{
+        container === 'Outbox'
+          ? '/members/' + message.recipientUserName
+          : '/members/' + message.senderUserName
+      }}"
+      [queryParams]="{ tab: 3 }"
+      class="message"
+    >
+      <td class="text-center">{{ message.content }}</td>
+      <td>
+        <div *ngIf="container !== 'Outbox'" class="text-start">
+          <img
+            class="rounded-circle user-avatar me-1"
+            src="{{ message.senderPhotoUrl || './assets/user.png' }}"
+            alt="{{ message.senderUserName }}"
+          />
+          <strong>{{ message.senderUserName | titlecase }}</strong>
+        </div>
+        <div *ngIf="container === 'Outbox'" class="text-start">
+          <img
+            class="rounded-circle user-avatar me-1"
+            src="{{ message.recipientPhotoUrl || './assets/user.png' }}"
+            alt="{{ message.recipientUserName }}"
+          />
+          <strong>{{ message.recipientUserName | titlecase }}</strong>
+        </div>
+      </td>
+      <td class="text-start">{{ message.messageSent | timeago }}</td>
+      <td class="text-center">
+        <button
+          routerLinkActive="is_disabled"
+          class="btn btn-danger"
+          (click)="deleteMessage(message)"
+          (click)="$event.stopPropagation()"
+        >
+          <!-- To prevent routerLink by clicking the button in Angular 13 and more you just need to pass to routerLink null or undefined (disable link) -->
+          <!-- In Angular 12 and less we need to stop propagation - to stop passing click event  -->
+
+          Delete
+        </button>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div
+  *ngIf="messages?.length > 0 && !loading"
+  class="d-flex justify-content-center"
+>
+  <pagination
+    [totalItems]="pagination.totalItems"
+    [itemsPerPage]="pagination.itemsPerPage"
+    [(ngModel)]="pagination.currentPage"
+    (pageChanged)="pageChanged($event)"
+    [boundaryLinks]="true"
+  ></pagination>
+</div>

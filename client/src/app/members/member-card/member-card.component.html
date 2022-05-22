@@ -18,13 +18,18 @@
         <button
           class="btn"
           [ngClass]="member.isLiked ? 'btn-primary' : 'btn-outline-primary'"
-          (click)="member.isLiked ? addDisLike(member) : addLike(member)"
+          (click)="member.isLiked ? deleteLike(member) : addLike(member)"
         >
           <i class="fa fa-heart"></i>
         </button>
       </li>
       <li class="list-inline-item">
-        <button class="btn btn-outline-primary">
+        <button
+          routerLink="/members/{{ member.userName }}"
+          class="btn btn-outline-primary"
+          [queryParams]="{ tab: 3 }"
+        >
+          <!-- when click on this button - we will go to link localhost:4200/members/{username}?tab=3-->
           <i class="fa fa-envelope"></i>
         </button>
       </li>

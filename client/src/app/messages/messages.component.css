@@ -1,0 +1,12 @@
+.message-table .table-column-40 {
+    width: 40%;
+}
+
+.message-table .table-column-20 {
+    width: 20%;
+}
+
+.message:hover {
+    cursor: pointer;
+    opacity: 0.5;
+}

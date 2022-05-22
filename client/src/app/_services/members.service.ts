@@ -6,8 +6,8 @@ import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { LikesParams } from '../_models/likesParams';
 import { Member } from '../_models/member';
-import { PaginatedResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
+import { getPaginatedResult, getPaginationHeader } from './paginationHelper';
 
 
 @Injectable({
@@ -33,7 +33,7 @@ export class MembersService {
     if(response) return of(response);
 
     //caching based on keys - every query has its own values in userParams - based on this keys we will send the data from memory
-    let params = this.getPaginationHeader(userParams.pageNumber, userParams.pageSize);
+    let params = getPaginationHeader(userParams.pageNumber, userParams.pageSize);
 
     params = params.append('minAge', userParams.minAge.toString());
     params = params.append('maxAge', userParams.maxAge.toString());
@@ -42,33 +42,12 @@ export class MembersService {
     params = params.append('orderIsDescending', userParams.orderIsDescending);
 
     //when we just http.get - then we just get response body, when add 'observe': 'response' -  we get all http response and add params
-    return this.getPaginatedResult<Member[]>(this.baseUrl + 'users', params).pipe(
+    return getPaginatedResult<Member[]>(this.baseUrl + 'users', params, this.http).pipe(
       map(result => {
         this.memberCache.set(this.key, result);
         return result;
       })
     );
-  }
-
-  private getPaginatedResult<T>(url: string, params: HttpParams) {
-    const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
-    return this.http.get<T>(url, { observe: 'response', params }).pipe(
-      map(response => {
-        paginatedResult.result = response.body; //push array of members to pagination result
-
-        if (response.headers.get('Pagination') !== null) {
-          paginatedResult.pagination = JSON.parse(response.headers.get('Pagination'));
-        }
-        return paginatedResult;
-      })
-    );
-  }
-
-  private getPaginationHeader(pageNumber: number, pageSize: number) {
-      let params = new HttpParams(); //params of http query
-      params = params.append('pageNumber', pageNumber.toString());
-      params = params.append('pageSize', pageSize.toString());
-      return params;
   }
 
   getMember(username: string) {
@@ -104,29 +83,31 @@ export class MembersService {
   addLike(username: string) {
     return this.http.post(this.baseUrl + 'likes/' + username, {}).pipe(
       map(() => {
-        var resultBody = this.memberCache.get(this.key)?.result;
-        var member = resultBody.find((member: Member) => member.userName === username);
+        const member = [...this.memberCache.values()]
+          .reduce((arr, elem) => arr.concat(elem.result), [])
+          .find((member: Member) => member.userName === username);
         if (member) member.isLiked = true;
       })
     );
   }
 
-  addDisLike(username: string) {
-    return this.http.post(this.baseUrl + 'likes/undo/' + username, {}).pipe(
+  deleteLike(username: string) {
+    return this.http.delete(this.baseUrl + 'likes/' + username, {}).pipe(
       map(() => {
-        var resultBody = this.memberCache.get(this.key)?.result;
-        var member = resultBody.find((member: Member) => member.userName === username);
+        const member = [...this.memberCache.values()]
+          .reduce((arr, elem) => arr.concat(elem.result), [])
+          .find((member: Member) => member.userName === username);
         if (member) member.isLiked = false;
       })
     );
   }
 
   getLikes(likesParams: LikesParams) { 
-    let params = this.getPaginationHeader(likesParams.pageNumber, likesParams.pageSize);
+    let params = getPaginationHeader(likesParams.pageNumber, likesParams.pageSize);
 
     params = params.append('predicate', likesParams.predicate);
 
-    return this.getPaginatedResult<Member[]>(this.baseUrl + 'likes', params);
+    return getPaginatedResult<Member[]>(this.baseUrl + 'likes', params, this.http);
   }
 
 }

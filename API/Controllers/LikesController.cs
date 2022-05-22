@@ -53,8 +53,8 @@ namespace API.Controllers
             return BadRequest("Failed to like user");
         }
 
-        [HttpPost("undo/{username}")] //...api/likes/username
-        public async Task<ActionResult> AddDisLike(string username)
+        [HttpDelete("{username}")] //...api/likes/username
+        public async Task<ActionResult> DeleteLike(string username)
         {
             var sourceUserId = User.GetUserId();
 

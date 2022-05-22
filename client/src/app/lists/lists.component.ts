@@ -14,6 +14,7 @@ export class ListsComponent implements OnInit {
   members: Partial<Member[]>; //each property in Member will be optional - because we do not return the whole member from get likes
   pagination: Pagination;
   likesParams: LikesParams;
+  loading = false;
 
 
   constructor(private memberService: MembersService) {
@@ -25,9 +26,11 @@ export class ListsComponent implements OnInit {
   }
 
   loadLikes() {
+    this.loading = true;
     this.memberService.getLikes(this.likesParams).subscribe(response => {
       this.members = response.result;
       this.pagination = response.pagination;
+      this.loading = false;
     })
   }
 

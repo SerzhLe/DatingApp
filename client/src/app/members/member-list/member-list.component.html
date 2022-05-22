@@ -4,7 +4,7 @@
 </div>
 
 <div class="container mt-3">
-  <form #form="ngForm" (ngSubmit)="loadMembers()" autocomplete="off">
+  <form #form="ngForm" (ngSubmit)="applyFilters()" autocomplete="off">
     <div class="filter-form d-flex align-items-end justify-content-center">
       <div class="age-and-descending-form">
         <!-- Age From -->
@@ -79,8 +79,17 @@
         </select>
       </div>
 
-      <button class="btn btn-primary me-1" type="submit">Apply filters</button>
-      <button (click)="resetFilters()" class="btn btn-secondary" type="button">
+      <button
+        class="btn btn-custom-success no-box-shadow-focus fw-bold me-1"
+        type="submit"
+      >
+        Apply filters
+      </button>
+      <button
+        (click)="resetFilters()"
+        class="btn btn-custom-light no-box-shadow-focus fw-bold"
+        type="button"
+      >
         Reset filters
       </button>
     </div>
@@ -91,10 +100,12 @@
   <div *ngFor="let member of members" class="col-2">
     <app-member-card [member]="member"></app-member-card>
   </div>
+  <h3 *ngIf="members?.length <= 0 && !loading">No members found..</h3>
 </div>
 
 <div *ngIf="pagination" class="d-flex justify-content-center">
   <pagination
+    #paginationForm
     [totalItems]="pagination.totalItems"
     [itemsPerPage]="pagination.itemsPerPage"
     [(ngModel)]="pagination.currentPage"

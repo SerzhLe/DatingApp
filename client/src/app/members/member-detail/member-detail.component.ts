@@ -1,8 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NgxGalleryAction, NgxGalleryAnimation, NgxGalleryImage, NgxGalleryImageSize, NgxGalleryLayout, NgxGalleryOptions } from '@kolkov/ngx-gallery';
+import { NgxGalleryImage, NgxGalleryImageSize, NgxGalleryOptions } from '@kolkov/ngx-gallery';
+import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
+import { ToastrService } from 'ngx-toastr';
 import { Member } from 'src/app/_models/member';
+import { Message } from 'src/app/_models/message';
 import { MembersService } from 'src/app/_services/members.service';
+import { MessageService } from 'src/app/_services/message.service';
 
 @Component({
   selector: 'app-member-detail',
@@ -10,17 +14,33 @@ import { MembersService } from 'src/app/_services/members.service';
   styleUrls: ['./member-detail.component.css']
 })
 export class MemberDetailComponent implements OnInit {
+  @ViewChild('memberTabs', {static: true}) memberTabs: TabsetComponent; //get tabset component to display messages chilc based on condition
   member: Member;
   galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
+  activeTab: TabDirective;
+  messages: Message[];
 
-  constructor(private memberService: MembersService, private route: ActivatedRoute) { }
+  constructor(private memberService: MembersService, 
+      private route: ActivatedRoute, 
+      private messageService: MessageService,
+      private toastr: ToastrService) { }
 
   ngOnInit(): void {
-    this.loadMember();
+    this.route.data.subscribe(data => { //we get data from resolver
+      this.member = data.member;
+    });
+
     //Here is a problem - when we load this component - member is undefined and angular show an error when we want to access member property in html
-    //then it load member and should after loading show member details - we nned to add condition if the members exists - only after that display member details
-  
+    //then it load member and should after loading show member details - we need to add condition if the members exists - only after that display member details
+    //another issue with If condition of member - we cannot get our tab form before member is loaded - using resolver to get data of member
+    //in order to remove condition for waiting member 
+
+
+    this.route.queryParams.subscribe(params => {
+      params.tab ? this.selectTab(params.tab) : this.selectTab(0); 
+    })
+
     this.galleryOptions = [
       {
         width: '600px',
@@ -28,7 +48,6 @@ export class MemberDetailComponent implements OnInit {
         thumbnailsColumns: 4,
         imagePercent: 80,
         preview: true,
-        startIndex: 1,
         imageArrowsAutoHide: true,
         imageSwipe: true,
         imageSize: NgxGalleryImageSize.Contain,
@@ -47,6 +66,8 @@ export class MemberDetailComponent implements OnInit {
       }
     ];
 
+    this.galleryImages = this.getImages();
+
     //если сюда поместить метод getImages() - система не получит юзера во время выполнения этого метода потому что запросы в бд
     //асинхронные и мы не ждем пока выполниться метод load.Members и сразу выполняем getImages()
   }
@@ -63,28 +84,34 @@ export class MemberDetailComponent implements OnInit {
     return imageUrls;
   }
 
-  loadMember() {
-    this.memberService.getMember(this.route.snapshot.paramMap.get('username')).subscribe(user => {
-      this.member = user;
-      this.galleryImages = this.getImages();
-      this.galleryImages.push(
-        {
-          small: '../../assets/girl1.jpg',
-          medium: '../../assets/girl1.jpg',
-          big: '../../assets/girl1.jpg'
-        },
-        {
-          small: '../../assets/girl2.jpg',
-          medium: '../../assets/girl2.jpg',
-          big: '../../assets/girl2.jpg'
-        },
-        {
-          small: '../../assets/girl3.jpg',
-          medium: '../../assets/girl3.jpg',
-          big: '../../assets/girl3.jpg'
-        }
-      );
-    }); 
-    //retrieve username from url of this component
+  loadMessages() {
+    this.messageService.getMessagesThread(this.member.userName).subscribe({
+      next: response => this.messages = response
+    });
+  }
+
+  addLike() {
+    this.memberService.addLike(this.member.userName).subscribe(() => {
+      this.toastr.info("You liked " + this.member.knownAs + '!');
+      this.member.isLiked = true;
+    })
+  }
+
+  deleteLike() {
+    this.memberService.deleteLike(this.member.userName).subscribe(() => {
+      this.toastr.info("You unliked " + this.member.knownAs + '!');
+      this.member.isLiked = false;
+    });
+  }
+
+  onTabActivated(data: TabDirective) {
+    this.activeTab = data;
+    if (this.activeTab.heading === 'Messages' && !this.messages) {
+      this.loadMessages();
+    }
+  }
+
+  selectTab(tabId: number) {
+    this.memberTabs.tabs[tabId].active = true; //active tab
   }
 }

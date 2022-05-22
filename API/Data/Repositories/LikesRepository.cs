@@ -9,7 +9,7 @@ using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Data
+namespace API.Data.Repositories
 {
     public class LikesRepository : ILikesRepository
     {
@@ -42,7 +42,7 @@ namespace API.Data
                 users = likes.Select(like => like.SourceUser); //select all source users from list of likes that liked this logged in user    
             }
 
-            users = users.OrderBy(u => u.UserName);
+            users = users.OrderBy(u => u.UserName.ToLower());
 
             var likers = users.Select(u => new LikeDto()
             { //did not use AutoMapper because of diversity

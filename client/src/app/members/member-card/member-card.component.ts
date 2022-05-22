@@ -21,13 +21,13 @@ export class MemberCardComponent implements OnInit {
 
   addLike(member: Member) {
     this.memberService.addLike(member.userName).subscribe(() => {
-      this.toastr.success("You liked " + member.knownAs + '!');
+      this.toastr.info("You liked " + member.knownAs + '!');
     });
   }
 
-  addDisLike(member: Member) {
-    this.memberService.addDisLike(member.userName).subscribe(() => {
-      this.toastr.success("You unliked " + member.knownAs + '!');
+  deleteLike(member: Member) {
+    this.memberService.deleteLike(member.userName).subscribe(() => {
+      this.toastr.info("You unliked " + member.knownAs + '!');
     });
   }
   

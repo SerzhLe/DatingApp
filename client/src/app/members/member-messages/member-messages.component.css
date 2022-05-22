@@ -1,0 +1,19 @@
+.fa-clock-o:before {
+    margin-right: 0.25rem;
+}
+
+.message-card {
+    max-width: 600px;
+    margin: auto;
+    height: 550px;
+}
+
+.message-card-body {
+    overflow-y: scroll;
+}
+
+.chat {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+}

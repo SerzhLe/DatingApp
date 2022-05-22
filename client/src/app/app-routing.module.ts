@@ -11,13 +11,14 @@ import { MemberListComponent } from './members/member-list/member-list.component
 import { MessagesComponent } from './messages/messages.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.guard';
+import { MemberDetailsResolver } from './_resolvers/member-details.resolver';
 
 const routes: Routes = [
   {path: '', component: HomeComponent}, //when we browser to https://localhost:4200 - it will see the HomeComponent
   //make an general rule for all these components
   {path: '', runGuardsAndResolvers: 'always', canActivate: [AuthGuard], children: [
     {path: 'members', component: MemberListComponent},
-    {path: 'members/:username', component: MemberDetailComponent}, //.../members/(can be 1, 2, or 3...)
+    {path: 'members/:username', component: MemberDetailComponent, resolve: {member: MemberDetailsResolver}}, //.../members/(can be 1, 2, or 3...)
     {path: 'member/edit', component: MemberEditComponent, canDeactivate: [PreventUnsavedChangesGuard]}, //member/edit to avoid confusion with members/username
     {path: 'lists', component: ListsComponent},
     {path: 'messages', component: MessagesComponent}

@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PageChangedEvent } from 'ngx-bootstrap/pagination';
+import { ThrowStmt } from '@angular/compiler';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { PageChangedEvent, PagesModel, PaginationComponent } from 'ngx-bootstrap/pagination';
 import { take } from 'rxjs/operators';
 import { Member } from 'src/app/_models/member';
 import { Pagination } from 'src/app/_models/pagination';
@@ -14,12 +15,14 @@ import { MembersService } from 'src/app/_services/members.service';
   styleUrls: ['./member-list.component.css']
 })
 export class MemberListComponent implements OnInit, OnDestroy {
+  @ViewChild('paginationForm') paginationForm: PaginationComponent;
   members: Member[];
   pagination: Pagination;
   userParams: UserParams;
   user: User;
   genderList = [{value: 'male', display: 'Males'}, {value: 'female', display: 'Females'}]
   orderByList = [{value: 'lastActive', display: 'Last Active'}, {value: 'created', display: 'Created Profile'}]
+  loading = false;
 
   constructor(private memberService: MembersService, private accountService: AccountService) { 
     this.accountService.currentUser$.pipe(take(1)).subscribe(response => {
@@ -41,9 +44,11 @@ export class MemberListComponent implements OnInit, OnDestroy {
     }
 
   loadMembers() {
+    this.loading = true;
     this.memberService.getMembers(this.userParams).subscribe(response => {
       this.members = response.result;
       this.pagination = response.pagination;
+      this.loading = false;
     });
     //we do not add pipe and take(1) because it is http response and it is completed once we subscribe
   }
@@ -54,6 +59,12 @@ export class MemberListComponent implements OnInit, OnDestroy {
 
   pageChanged(event: PageChangedEvent) {
     this.userParams.pageNumber = event.page;
+    this.loadMembers();
+  }
+
+  applyFilters() {
+    this.userParams.pageNumber = 1;
+    this.paginationForm.page = 1;
     this.loadMembers();
   }
 }

@@ -26,7 +26,7 @@ namespace API.Controllers
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
         private readonly ILikesRepository _likesRepository;
-        public UsersController(IUserRepository userRepository, IMapper mapper, 
+        public UsersController(IUserRepository userRepository, IMapper mapper,
             IPhotoService photoService, ILikesRepository likesRepository)
         {
             _likesRepository = likesRepository;
@@ -69,11 +69,20 @@ namespace API.Controllers
         }
 
 
-        //user endpoint protected - to get this method user must be authorized
+        //GetUser - we need to send back this memberDto when uploading files
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<ActionResult<MemberDto>> GetUser(string username) //https://localhost:5001/api/users/2
         {
-            return await _userRepository.GetMemberAsync(username);
+            var user = await _userRepository.GetUserByUsernameAsync(User.GetCurrentUserName());
+
+            var askedUser = await _userRepository.GetMemberAsync(username);
+
+            var likes = await _likesRepository.GetAllUserLikesAsync("liked", user.Id);
+
+            if (likes.SingleOrDefault(u => u.LikedUserId == askedUser.Id) != null)
+                askedUser.IsLiked = true;
+
+            return askedUser;
         }
 
         [HttpPut] //Put when we change data

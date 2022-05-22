@@ -1,0 +1,76 @@
+<div class="card mt-2 message-card" *ngIf="messages">
+  <div id="messageBody" class="card-body p-2 message-card-body">
+    <div *ngIf="messages?.length <= 0">
+      No messages yet.. say hi by using the message box below
+    </div>
+    <ul *ngIf="messages?.length > 0" class="list-group chat">
+      <li
+        id="userMessage"
+        *ngFor="let message of messages.reverse()"
+        class="list-group-item py-0"
+        [ngClass]="{
+          'text-end': message.senderUserName !== recipientUserName
+        }"
+      >
+        <div>
+          <span class="chat-img float-right">
+            <img
+              src="{{ message.senderPhotoUrl || '../assets/user.png' }}"
+              alt="{{ message.senderUserName }}"
+              class="rounded-circle user-avatar"
+            />
+          </span>
+          <div class="chat-body">
+            <div class="header">
+              <small class="text-muted">
+                <span class="fa fa-clock-o">{{
+                  message.messageSent | timeago
+                }}</span>
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    !message.messageRead && message.senderUserName !== username
+                  "
+                >
+                  (unread)
+                </span>
+                <span
+                  class="text-dark"
+                  *ngIf="
+                    message.messageRead && message.senderUserName !== username
+                  "
+                >
+                  (read {{ message.messageRead | timeago }})
+                </span>
+              </small>
+            </div>
+            <p>{{ message.content }}</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card-footer">
+    <form #messageForm="ngForm" (ngSubmit)="sendMessage()">
+      <div class="d-flex">
+        <input
+          type="text"
+          required
+          class="form-control input-sm me-2"
+          placeholder="Send a private message"
+          [(ngModel)]="message.content"
+          name="content"
+          autocomplete="off"
+        />
+        <button
+          [disabled]="!messageForm.valid"
+          class="btn btn-primary"
+          type="submit"
+        >
+          Send
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
