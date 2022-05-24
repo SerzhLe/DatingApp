@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Extensions;
-using System.Data.Entity;
 using API.Helpers;
 
 namespace API.Controllers
@@ -34,6 +33,9 @@ namespace API.Controllers
             _mapper = mapper;
             _userRepository = userRepository;
         }
+
+        //[Authorize(Roles = "Admin")] //with this only admin can access this API - temporary test roles
+        //DO NOT USE this approach - USE policy based authorization!
 
         [HttpGet]
         //we are going to send http request with quesry string - because this calss marked with Api attribute 
@@ -70,6 +72,8 @@ namespace API.Controllers
 
 
         //GetUser - we need to send back this memberDto when uploading files
+        //BUT nobody use this approach!
+        //[Authorize(Roles = "Member")]
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<ActionResult<MemberDto>> GetUser(string username) //https://localhost:5001/api/users/2
         {

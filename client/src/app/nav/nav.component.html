@@ -31,6 +31,14 @@
                 >Messages</a
               >
             </li>
+            <li *appHasRole="['Admin', 'Moderator']" class="nav-item">
+              <a
+                class="nav-link"
+                routerLink="/admin-panel"
+                routerLinkActive="active"
+                >Admin</a
+              >
+            </li>
           </ng-container>
           <li class="nav-item">
             <a class="nav-link" routerLink="/errors" routerLinkActive="active"
@@ -50,7 +58,7 @@
           <div style="cursor: pointer" class="dropdown" dropdown>
             <!-- now we can use User object because of "as"-->
             <a class="nav-link dropdown-toggle text-light" dropdownToggle
-              >Welcome, {{ user.knownAs }}!</a
+              >Welcome, {{ user.knownAs || user.userName }}!</a
             >
             <div class="dropdown-menu" *dropdownMenu>
               <a class="dropdown-item" routerLink="/member/edit"

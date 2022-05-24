@@ -64,7 +64,8 @@ namespace API.Data.Repositories
             //these returned entities will not be tracked by EF - AsNoTracking()
             //this is kind of optimization - use method when we need readonly list of entities
 
-            return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), userParams.PageNumber, userParams.PageSize);
+            return await PagedList<MemberDto>.CreateAsync(query
+                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)

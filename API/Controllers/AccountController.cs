@@ -9,6 +9,7 @@ using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,14 +17,17 @@ namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private readonly DataContext _context;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
-        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        public AccountController(ITokenService tokenService, IMapper mapper,
+            UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
+            _signInManager = signInManager;
+            _userManager = userManager;
             _mapper = mapper;
             _tokenService = tokenService;
-            _context = context;
         }
 
         [HttpPost("register")]
@@ -32,23 +36,29 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
             //we want the username to be unique
-            if (await UserExists(registerDto.UserName)) return BadRequest("Username already exists"); //ActionResult return any of HTTP status codes
+            if (await UserExists(registerDto.UserName)) return BadRequest("Username already exists");
+            //ActionResult return any of HTTP status codes
 
             var user = _mapper.Map<RegisterDto, AppUser>(registerDto);
 
-            using var hmac = new HMACSHA512(); //creates a hash object. We use 'using' because this class has Dispose()
+            //IMPORTANT! With implementing Asp.Net Identity we DO NOT NEED MORE password hashing!
+            //using var hmac = new HMACSHA512(); //creates a hash object. We use 'using' because this class has Dispose()
+            //user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)); //we generate byte[] of password string and compute hash value
+            //user.PasswordSalt = hmac.Key; //byte[]
 
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)); //we generate byte[] of password string and compute hash value
-            user.PasswordSalt = hmac.Key; //byte[]
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            //creates user, hash password and save changes
 
-            _context.Users.Add(user);
+            if (!result.Succeeded) return BadRequest(result.Errors);
 
-            await _context.SaveChangesAsync();
+            var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+
+            if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
             return new UserDto()
             {
                 UserName = user.UserName,
-                Token = _tokenService.CreateToken(user),
+                Token = await _tokenService.CreateToken(user),
                 KnownAs = user.KnownAs,
                 Gender = user.Gender
             };
@@ -60,25 +70,29 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _context.Users.Include(u => u.Photos).SingleOrDefaultAsync(u => u.UserName == loginDto.UserName);
+            var user = await _userManager.Users.Include(u => u.Photos).SingleOrDefaultAsync(u => u.UserName == loginDto.UserName);
+            //we can use Include in userManager
 
             if (user == null) return Unauthorized("Invalid username");
 
-            using var hmac = new HMACSHA512(user.PasswordSalt); //every time a hash for definite string will be not the same
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+
+            if (!result.Succeeded) return Unauthorized();
+
+            //DO NOT USE MORE this custom authentication - we will use Identity 
+            //using var hmac = new HMACSHA512(user.PasswordSalt); //every time a hash for definite string will be not the same
             //in order to generate the same hash for the string password as user had while registration - we neen to pass here the secret key
             //It is Password Salt that tells the HMACSHA512 how to encrypt the string pass BECAUSE Salt equals a key of this class
-
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-
-            for (int i = 0; i < computedHash.Length; i++)
-            {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
-            }
+            //var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+            //for (int i = 0; i < computedHash.Length; i++)
+            //{
+            //if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
+            //}
 
             return new UserDto()
             {
                 UserName = user.UserName,
-                Token = _tokenService.CreateToken(user),
+                Token = await _tokenService.CreateToken(user),
                 PhotoUrl = user.Photos.SingleOrDefault(photo => photo.IsMain)?.Url, //eager loaded earlier
                 KnownAs = user.KnownAs,
                 Gender = user.Gender
@@ -87,7 +101,7 @@ namespace API.Controllers
 
         private async Task<bool> UserExists(string username)
         {
-            return await _context.Users.AnyAsync(user => user.UserName == username);
+            return await _userManager.Users.AnyAsync(user => user.UserName == username);
         }
     }
 }

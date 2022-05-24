@@ -9,6 +9,6 @@ namespace API.Interfaces
     //we create interface for future simple testing
     public interface ITokenService
     {
-        string CreateToken(AppUser user);
+        Task<string> CreateToken(AppUser user);
     }
 }

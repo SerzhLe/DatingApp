@@ -13,7 +13,7 @@ namespace API.Helpers
     public class LogUserActivity : IAsyncActionFilter
     {
         //add ServiceFilter to BaseApiController
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) //next - is what happens after rewsust execution
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) //next - is what happens after response execution
         {
             var resultContext = await next();
 

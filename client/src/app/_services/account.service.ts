@@ -18,8 +18,7 @@ export class AccountService {
 
   login(model: any) {
     return this.http.post(this.baseUrl + 'account/login', model).pipe(
-      map((response: User) => {
-        const user = response;
+      map((user: User) => {
         if (user) {
           this.setCurrentUser(user);
         }
@@ -37,7 +36,12 @@ export class AccountService {
     )
   }
 
-  setCurrentUser(user: User) {  //узнай завтра зачем мы сделали этот метод! Этот метод мы вызываем при запуске веб приложения в app component
+  setCurrentUser(user: User) { 
+    if (!user) return; 
+    user.roles = [];
+    const roles = this.getDecodedToken(user.token)["role"];
+    Array.isArray(roles) ? user.roles = roles : user.roles.push(roles);
+
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
   }
@@ -48,6 +52,11 @@ export class AccountService {
     this.memberService.loggedInMember = null;
     this.memberService.userParams = null;
     this.currentUserSource.next(null);
+  }
+
+  getDecodedToken(token: string) {
+    return JSON.parse(atob(token.split('.')[1])); //returning the payload of token
+    //atob - decode string, btoa - encode. Only signature of token is enctypted!
   }
 
 }
