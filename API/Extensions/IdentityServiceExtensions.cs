@@ -44,9 +44,29 @@ namespace API.Extensions
                             ValidateIssuer = false, //issuer - who generates a token
                             ValidateAudience = false //audience - which application can receive this token
                         };
+
+                        //we will add token to queryString because WebSocket cannot user authentication header
+                        //when we in Postman give Authentication Bearer - we cannot use it with WebSocket
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = context =>
+                            {
+                                var accessToken = context.Request.Query["access_token"];
+
+                                var path = context.HttpContext.Request.Path;
+
+                                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                                {
+                                    context.Token = accessToken; //we implement possibility to push token as query string in request
+                                }
+
+                                return Task.CompletedTask;
+                            }
+                        };
                     });
 
-            services.AddAuthorization(opt => {
+            services.AddAuthorization(opt =>
+            {
                 opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
                 opt.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
             });

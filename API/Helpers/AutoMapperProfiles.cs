@@ -22,10 +22,14 @@ namespace API.Helpers
             CreateMap<MemberUpdateDto, AppUser>();
             CreateMap<RegisterDto, AppUser>();
             CreateMap<Message, MessageDto>()
-                .ForMember(dest => dest.SenderPhotoUrl, 
+                .ForMember(dest => dest.SenderPhotoUrl,
                     opt => opt.MapFrom(src => src.Sender.Photos.FirstOrDefault(p => p.IsMain).Url))
-                .ForMember(dest => dest.RecipientPhotoUrl, 
+                .ForMember(dest => dest.RecipientPhotoUrl,
                     opt => opt.MapFrom(src => src.Recipient.Photos.FirstOrDefault(p => p.IsMain).Url));
+
+            //we converted all our DateTime.Now to DateTime.UtcNow and also with this map we specify that our datetime is UTC
+            //because if we do not do it - on different browsers will show different time as browser does not know if it is local time or not
+            CreateMap<DateTime, DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
         }
     }
 }

@@ -1,12 +1,19 @@
-<div class="card mt-2 message-card" *ngIf="messages">
+<div
+  class="card mt-2 message-card"
+  *ngIf="messageService.messageThread$ | async"
+>
   <div id="messageBody" class="card-body p-2 message-card-body">
-    <div *ngIf="messages?.length <= 0">
+    <div *ngIf="(messageService.messageThread$ | async)?.length <= 0">
       No messages yet.. say hi by using the message box below
     </div>
-    <ul *ngIf="messages?.length > 0" class="list-group chat">
+    <ul
+      *ngIf="(messageService.messageThread$ | async)?.length > 0"
+      class="list-group chat"
+      id="chat"
+    >
       <li
         id="userMessage"
-        *ngFor="let message of messages.reverse()"
+        *ngFor="let message of messageService.messageThread$ | async"
         class="list-group-item py-0"
         [ngClass]="{
           'text-end': message.senderUserName !== recipientUserName
@@ -29,7 +36,8 @@
                 <span
                   class="text-danger"
                   *ngIf="
-                    !message.messageRead && message.senderUserName !== username
+                    message.messageRead === '0001-01-01T00:00:00' &&
+                    message.senderUserName !== recipientUserName
                   "
                 >
                   (unread)
@@ -37,7 +45,8 @@
                 <span
                   class="text-dark"
                   *ngIf="
-                    message.messageRead && message.senderUserName !== username
+                    message.messageRead !== '0001-01-01T00:00:00' &&
+                    message.senderUserName !== recipientUserName
                   "
                 >
                   (read {{ message.messageRead | timeago }})

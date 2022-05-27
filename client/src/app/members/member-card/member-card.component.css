@@ -5,3 +5,8 @@
 .member-card {
     max-height: 300px;
 }
+
+.is-online {
+    color: rgb(10, 229, 57);
+}
+

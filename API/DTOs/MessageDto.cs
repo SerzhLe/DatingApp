@@ -15,7 +15,8 @@ namespace API.DTOs
         public string RecipientUserName { get; set; }
         public string RecipientPhotoUrl { get; set; }
         public string Content { get; set; }
-        public DateTime? MessageRead { get; set; }
+        //remove ? nullable type because automapper did not want to map this type in DateTime Utc
+        public DateTime MessageRead { get; set; }
         public DateTime MessageSent { get; set; }
     }
 }

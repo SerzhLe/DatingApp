@@ -22,6 +22,11 @@ namespace API.Data.Repositories
             _context = context;
         }
 
+        public void AddGroup(Group group)
+        {
+            _context.Groups.Add(group);
+        }
+
         public void AddMessage(Message message)
         {
             _context.Messages.Add(message);
@@ -32,9 +37,27 @@ namespace API.Data.Repositories
             _context.Messages.Remove(message);
         }
 
+        public async Task<Connection> GetConnection(string connectionId)
+        {
+            return await _context.Connections.FirstOrDefaultAsync(c => c.ConnectionId == connectionId);
+        }
+
         public async Task<Message> GetMessage(int id)
         {
             return await _context.Messages.FindAsync(id);
+        }
+
+        public async Task<Group> GetMessageGroup(string groupName)
+        {
+            return await _context.Groups.Include(g => g.Connections).FirstOrDefaultAsync(g => g.Name == groupName);
+        }
+
+        public async Task<Group> GetGroupFromConnection(string connectionId)
+        {
+            return await _context.Groups
+                .Include(g => g.Connections)
+                .SingleOrDefaultAsync(g => g.Connections
+                    .Any(c => c.ConnectionId == connectionId));
         }
 
         public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
@@ -55,7 +78,13 @@ namespace API.Data.Repositories
             return await PagedList<MessageDto>.CreateAsync(message, messageParams.PageNumber, messageParams.PageSize);
         }
 
-        public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName)
+        public async Task<int> GetCountOfUnreadMessages(string username)
+        {
+            return await _context.Messages.Where(m => m.RecipientUserName == username).CountAsync(m => m.MessageRead == null);
+        }
+
+        public async Task<(IEnumerable<MessageDto> messages, int unreadMessagesCount)>
+            GetMessageThread(string currentUserName, string recipientUserName)
         {
             var messages = await _context.Messages
                                     .Include(m => m.Sender).ThenInclude(p => p.Photos) //because we do not projecting but loading to memory
@@ -71,18 +100,26 @@ namespace API.Data.Repositories
                                     .ToListAsync();
 
             var unreadMessages = messages.Where(m => m.MessageRead == null && m.Recipient.UserName == currentUserName).ToList();
+            var unreadMessagesCount = unreadMessages.Count;
 
-            if (unreadMessages.Any())
+            if (unreadMessagesCount > 0)
             {
                 foreach (var message in unreadMessages) //if message was unread - make it read
                 {
-                    message.MessageRead = DateTime.Now;
+                    message.MessageRead = DateTime.UtcNow;
                 }
 
                 await _context.SaveChangesAsync();
             }
 
-            return _mapper.Map<IEnumerable<MessageDto>>(messages);
+            var result = (_mapper.Map<IEnumerable<MessageDto>>(messages), unreadMessagesCount);
+
+            return result;
+        }
+
+        public void RemoveConnection(Connection connection)
+        {
+            _context.Connections.Remove(connection);
         }
 
         public async Task<bool> SaveAllAsync()

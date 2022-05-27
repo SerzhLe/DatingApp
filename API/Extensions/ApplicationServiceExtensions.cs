@@ -7,6 +7,7 @@ using API.Data.Repositories;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
@@ -17,6 +18,7 @@ namespace API.Extensions
         {
             //!!!we use add services if we need to use this classes as dependency injection!!!
 
+            services.AddSingleton<PresenceTracker>();//we create ONE object of presence tracker for all API calls!
 
             //we add configurations and strongly typed keys in cloudinary settings - we need configure this in that way
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
@@ -28,6 +30,8 @@ namespace API.Extensions
             services.AddScoped<ILikesRepository, LikesRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<LogUserActivity>();
+
+
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options =>
             {

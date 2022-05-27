@@ -49,7 +49,9 @@ namespace API.Controllers
 
             _messageRepository.AddMessage(message);
 
-            if (await _messageRepository.SaveAllAsync()) return Ok(_mapper.Map<MessageDto>(message));
+            var messageDto = _mapper.Map<MessageDto>(message);
+
+            if (await _messageRepository.SaveAllAsync()) return Ok(messageDto);
 
             return BadRequest("Failed to create message");
         }
@@ -74,7 +76,7 @@ namespace API.Controllers
 
             if (username == currentUsername) return BadRequest("You cannot chat with yourself");
 
-            return Ok(await _messageRepository.GetMessageThread(currentUsername, username));
+            return Ok((await _messageRepository.GetMessageThread(currentUsername, username)).Item1);
         }
 
         [HttpDelete("{messageId}")]

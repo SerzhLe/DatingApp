@@ -1,0 +1,15 @@
+.notification-number {
+    background-color: #c3eb0d;
+    color: #000;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.75rem;
+    width: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.notification-link {
+    position: relative;
+}

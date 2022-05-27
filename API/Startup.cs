@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using API.Middleware;
+using API.SignalR;
 
 namespace API
 {
@@ -48,6 +49,8 @@ namespace API
             services.AddCors(); //add CORS to allow http requests use our API
 
             services.AddIdentityServices(_config); //it is also extension customized method 
+
+            services.AddSignalR();
         }
 
 
@@ -71,14 +74,20 @@ namespace API
             app.UseRouting();
 
             //very important place it after Routing
-            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+            app.UseCors(policy => policy
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()// need supply when using SignalR and we want to send token to query string
+                .WithOrigins("https://localhost:4200"));
 
             app.UseAuthentication(); //important to place here!
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers(); //endpoints - map to our apicontrollers
+                endpoints.MapHub<MessageHub>("hubs/message");
+                endpoints.MapHub<PresenceHub>("hubs/presence"); //cause we will have more than one hub
             });
         }
     }

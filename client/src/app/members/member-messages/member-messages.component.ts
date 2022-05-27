@@ -1,5 +1,6 @@
 import { Container } from '@angular/compiler/src/i18n/i18n_ast';
 import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { Message } from 'src/app/_models/message';
 import { MessageToCreate } from 'src/app/_models/messageToCreate';
 import { MessageService } from 'src/app/_services/message.service';
@@ -10,12 +11,10 @@ import { MessageService } from 'src/app/_services/message.service';
   styleUrls: ['./member-messages.component.css']
 })
 export class MemberMessagesComponent implements OnInit {
-  @Input() messages: Message[];
   @Input() recipientUserName: string;
   message: MessageToCreate;
-  newMessage: Message;
 
-  constructor(private messageService: MessageService) {
+  constructor(public messageService: MessageService) {
     this.message = new MessageToCreate();
    }
 
@@ -24,13 +23,10 @@ export class MemberMessagesComponent implements OnInit {
   }
 
   sendMessage() {
-    this.messageService.createMessage(this.message).subscribe({
-      next: response => {
-        this.newMessage = response;
-        this.messages.push(this.newMessage);
-        this.message.content = '';
-      } 
-    });
+    this.messageService.createMessage(this.message).then(() => {
+      this.message.content = '';
+      document.getElementById('chat').scrollIntoView(false);
+    })
   }
 
 }

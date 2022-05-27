@@ -7,6 +7,12 @@
         class="card-img-top img-thumbnail p-1 profile-img"
       />
       <div class="card-body pb-1">
+        <div
+          class="mb-1"
+          *ngIf="(presence.onlineUsers$ | async).includes(member.userName)"
+        >
+          <i class="fa fa-user-circle">Online now</i>
+        </div>
         <div>
           <strong>Location:</strong>
           <p>{{ member.city }}, {{ member.country }}</p>
@@ -31,7 +37,7 @@
             class="btn btn-primary"
             (click)="member.isLiked ? deleteLike() : addLike()"
           >
-            {{ member.isLiked ? "Unlike" : "Like" }}
+            {{ member.isLiked ? "Dislike" : "Like" }}
           </button>
           <button class="btn btn-danger" (click)="selectTab(3)">Message</button>
         </div>
@@ -40,12 +46,7 @@
   </div>
   <div class="col-8 p-3">
     <tabset #memberTabs>
-      <tab
-        heading="About {{ member.knownAs }}"
-        id="tab1"
-        class="pb-2"
-        (selectTab)="onTabActivated($event)"
-      >
+      <tab heading="About {{ member.knownAs }}" id="tab1" class="pb-2">
         <!-- Now when we select the tab - it calls onTabActivated() and if tab heading is Messages - then load messages -->
         <h4 class="mt-2">Description</h4>
         <p>{{ member.introduction }}</p>
@@ -76,7 +77,6 @@
         <!-- We want construct this component ONLY when user clicks on tab Messages. 
           By default - when constructs parent (this comp) - constructs also a child -->
         <app-member-messages
-          [messages]="messages"
           [recipientUserName]="member.userName"
         ></app-member-messages>
       </tab>

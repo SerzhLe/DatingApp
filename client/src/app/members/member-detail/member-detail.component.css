@@ -4,3 +4,11 @@
     margin: auto;
     margin-top: 1rem
 }
+
+i::before {
+    margin-right: 0.5rem;
+}
+
+i {
+    color: rgb(10, 229, 57);
+}

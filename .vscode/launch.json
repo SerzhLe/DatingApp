@@ -32,6 +32,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/API/bin/Debug/net6.0/API.exe",
             "cwd": "${workspaceFolder}/API",
+            "requireExactSource": false
         }
-    ]
+    ],
 }

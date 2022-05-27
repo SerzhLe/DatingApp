@@ -5,6 +5,7 @@ import {map} from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../_models/user';
 import { MembersService } from './members.service';
+import { PresenceService } from './presence.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,13 +15,14 @@ export class AccountService {
   private currentUserSource = new ReplaySubject<User>(1); //buffer for storing User object - 1 amount - size of buffer
   currentUser$ = this.currentUserSource.asObservable();//as it will be an observable - it should have '$' at the end
 
-  constructor(private http: HttpClient, private memberService: MembersService) { }
+  constructor(private http: HttpClient, private memberService: MembersService, private presenceService: PresenceService) { }
 
   login(model: any) {
     return this.http.post(this.baseUrl + 'account/login', model).pipe(
       map((user: User) => {
         if (user) {
           this.setCurrentUser(user);
+          this.presenceService.createHubConnection(user);
         }
       })
     );
@@ -31,6 +33,7 @@ export class AccountService {
       map((user: User) => {
         if (user) {
           this.setCurrentUser(user);
+          this.presenceService.createHubConnection(user);
         }
       })
     )
@@ -48,10 +51,11 @@ export class AccountService {
 
   logout() {
     localStorage.removeItem('user');
+    this.currentUserSource.next(null);
     this.memberService.memberCache = new Map();
     this.memberService.loggedInMember = null;
     this.memberService.userParams = null;
-    this.currentUserSource.next(null);
+    this.presenceService.stopHubConnection(); 
   }
 
   getDecodedToken(token: string) {

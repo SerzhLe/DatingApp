@@ -23,12 +23,17 @@
                 >Lists</a
               >
             </li>
-            <li class="nav-item">
+            <li class="nav-item notification-link">
               <a
                 class="nav-link"
                 routerLink="/messages"
                 routerLinkActive="active"
                 >Messages</a
+              >
+              <span
+                *ngIf="(presence.unreadMessagesCount$ | async) > 0"
+                class="notification-number"
+                >{{ presence.unreadMessagesCount$ | async }}</span
               >
             </li>
             <li *appHasRole="['Admin', 'Moderator']" class="nav-item">

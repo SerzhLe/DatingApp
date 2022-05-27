@@ -47,6 +47,10 @@
     width: 20%;
 }
 
+.btn {
+    white-space: nowrap;
+}
+
 .btn-custom-primary {
     color: #fff;
     background-color: #e83283;
