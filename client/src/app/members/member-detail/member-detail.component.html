@@ -46,7 +46,12 @@
   </div>
   <div class="col-8 p-3">
     <tabset #memberTabs>
-      <tab heading="About {{ member.knownAs }}" id="tab1" class="pb-2">
+      <tab
+        heading="About {{ member.knownAs }}"
+        id="tab1"
+        class="pb-2"
+        (selectTab)="onTabActivated($event)"
+      >
         <!-- Now when we select the tab - it calls onTabActivated() and if tab heading is Messages - then load messages -->
         <h4 class="mt-2">Description</h4>
         <p>{{ member.introduction }}</p>

@@ -69,7 +69,7 @@ export class MessageService {
   }
 
   stopHubConnection() {
-    if (this.hubConnection.state === 'Disconnected') return;
+    if (!this.hubConnection || this.hubConnection?.state === 'Disconnected') return;
     this.hubConnection.stop().catch(error => console.log(error));
   }
 

@@ -83,10 +83,14 @@ export class MembersService {
   addLike(username: string) {
     return this.http.post(this.baseUrl + 'likes/' + username, {}).pipe(
       map(() => {
-        const member = [...this.memberCache.values()]
+        const member: Member[] = [...this.memberCache.values()]
           .reduce((arr, elem) => arr.concat(elem.result), [])
-          .find((member: Member) => member.userName === username);
-        if (member) member.isLiked = true;
+          .filter((member: Member) => member.userName === username);
+        if (member) {
+          member.forEach(element => {
+            element.isLiked = true;
+          });
+        }
       })
     );
   }
@@ -94,10 +98,14 @@ export class MembersService {
   deleteLike(username: string) {
     return this.http.delete(this.baseUrl + 'likes/' + username, {}).pipe(
       map(() => {
-        const member = [...this.memberCache.values()]
+        const member: Member[] = [...this.memberCache.values()]
           .reduce((arr, elem) => arr.concat(elem.result), [])
-          .find((member: Member) => member.userName === username);
-        if (member) member.isLiked = false;
+          .filter((member: Member) => member.userName === username);
+        if (member) {
+          member.forEach(element => {
+            element.isLiked = false;
+          });
+        }
       })
     );
   }

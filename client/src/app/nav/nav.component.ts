@@ -1,8 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Observable } from 'rxjs';
-import { User } from '../_models/user';
 import { AccountService } from '../_services/account.service';
 import { PresenceService } from '../_services/presence.service';
 
@@ -12,15 +11,23 @@ import { PresenceService } from '../_services/presence.service';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
+  @ViewChild('loginForm') loginForm: NgForm;
   model: any = {};
   userName: string;
 
-  constructor(public accountService: AccountService, private router: Router, private toastr: ToastrService, private presence: PresenceService) { }
+  constructor(public accountService: AccountService, 
+    private router: Router, private toastr: ToastrService, 
+    private presence: PresenceService) { }
 
   ngOnInit(): void {
   }
 
   login() {
+    if (!this.loginForm.valid) {
+      this.toastr.error("Please, enter the credentials.");
+      return;
+    }
+
     this.accountService.login(this.model).subscribe({
       next: response => {
         this.router.navigateByUrl('/members'); //navigate to members element when logged in

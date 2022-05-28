@@ -37,12 +37,14 @@ export class UserManagementComponent implements OnInit {
       const rolesToUpdate = {
         roles: values.filter(el => el.checked === true).map(el => el.name)
       };
-      if (rolesToUpdate) {
-        this.adminService.editRoles(user.userName, rolesToUpdate.roles).subscribe(() => {
-          user.roles = rolesToUpdate.roles;
-          this.toastr.success(user.userName + '`s roles have been updated');
-        })
+      if (rolesToUpdate.roles?.length <= 0) {
+        this.toastr.error("User must have at least one role.");
+        return;
       }
+      this.adminService.editRoles(user.userName, rolesToUpdate.roles).subscribe(() => {
+        user.roles = rolesToUpdate.roles;
+        this.toastr.success(user.userName + '`s roles have been updated');
+      })
     })
   }
 
