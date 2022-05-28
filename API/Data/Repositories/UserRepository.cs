@@ -73,19 +73,26 @@ namespace API.Data.Repositories
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<AppUser> GetUserByUsernameAsync(string username)
+        public async Task<AppUser> GetUserWithPhotosByUsernameAsync(string username)
         {
             return await _context.Users.Include(p => p.Photos).SingleOrDefaultAsync(u => u.UserName == username);
+        }
+        public async Task<AppUser> GetUserByUsernameAsync(string username)
+        {
+            return await _context.Users.SingleOrDefaultAsync(u => u.UserName == username);
+        }
+
+        public async Task<string> GetUserGender(string username)
+        {
+            return await _context.Users
+                .Where(u => u.UserName == username)
+                .Select(u => u.Gender)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
             return await _context.Users.Include(p => p.Photos).ToListAsync();
-        }
-
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0; //if changes are saved, method returns number of changes
         }
 
         public void UpdateProfile(AppUser user)

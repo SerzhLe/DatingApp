@@ -14,10 +14,11 @@ namespace API.SignalR
     public class PresenceHub : Hub
     {
         private readonly PresenceTracker _presenceTracker;
-        private readonly IMessageRepository _messageRepository;
-        public PresenceHub(PresenceTracker presenceTracker, IMessageRepository messageRepository)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public PresenceHub(PresenceTracker presenceTracker, IUnitOfWork unitOfWork)
         {
-            _messageRepository = messageRepository;
+            _unitOfWork = unitOfWork;
             _presenceTracker = presenceTracker;
         }
 
@@ -34,7 +35,7 @@ namespace API.SignalR
             var onlineUsers = await _presenceTracker.GetOnlineUsers();
             await Clients.Caller.SendAsync("GetOnlineUsers", onlineUsers);
 
-            var unreadMessagesCount = await _messageRepository.GetCountOfUnreadMessages(Context.User.GetCurrentUserName());
+            var unreadMessagesCount = await _unitOfWork.MessageRepository.GetCountOfUnreadMessages(Context.User.GetCurrentUserName());
             await Clients.Caller.SendAsync("UnreadMessagesCount", unreadMessagesCount);
         }
 

@@ -29,7 +29,7 @@ namespace API.Helpers
 
             //we converted all our DateTime.Now to DateTime.UtcNow and also with this map we specify that our datetime is UTC
             //because if we do not do it - on different browsers will show different time as browser does not know if it is local time or not
-            CreateMap<DateTime, DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
+            //I used another code in DataContext config!
         }
     }
 }

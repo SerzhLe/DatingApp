@@ -26,9 +26,9 @@ namespace API.Extensions
 
             services.AddScoped<ITokenService, TokenService>(); //add specific service and it disposes when specific http request ends
             services.AddScoped<IPhotoService, PhotoService>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<ILikesRepository, LikesRepository>();
-            services.AddScoped<IMessageRepository, MessageRepository>();
+
+            //instead of all repositories as services we will use unit of work as service
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<LogUserActivity>();
 
 

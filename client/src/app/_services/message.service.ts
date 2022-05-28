@@ -47,12 +47,12 @@ export class MessageService {
     this.hubConnection.on('UpdatedGroup', (group: Group) => {
       this.messageThread$.pipe(take(1)).subscribe(messages => {
 
-        let unreadMessages = messages.filter(m => m.messageRead === '0001-01-01T00:00:00');
+        let unreadMessages = messages.filter(m => m.messageRead === null);
 
         if (unreadMessages.length > 0) {
       
           unreadMessages.forEach(m => {
-            m.messageRead = new Date(Date.now()).toUTCString();
+            m.messageRead = new Date(Date.now());
           });
   
           this.messageThreadSource.next([...messages]);

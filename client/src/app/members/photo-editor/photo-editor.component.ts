@@ -8,6 +8,7 @@ import { take } from 'rxjs/operators';
 import { MembersService } from 'src/app/_services/members.service';
 import { Photo } from 'src/app/_models/photo';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmService } from 'src/app/_services/confirm.service';
 
 @Component({
   selector: 'app-photo-editor',
@@ -22,7 +23,10 @@ export class PhotoEditorComponent implements OnInit {
   baseUrl = environment.apiUrl;
   user: User;
 
-  constructor(private accountService: AccountService, private memberService: MembersService, private toastr: ToastrService) {
+  constructor(private accountService: AccountService, 
+    private memberService: MembersService, 
+    private toastr: ToastrService,
+    private confirmService: ConfirmService) {
     this.accountService.currentUser$.pipe(take(1)).subscribe({next: user => this.user = user});
    }
 
@@ -82,11 +86,15 @@ export class PhotoEditorComponent implements OnInit {
   }
 
   deletePhoto(photo: Photo) {
-    this.memberService.deletePhoto(photo.id).subscribe(() => {
-      const index = this.member.photos.indexOf(photo);
-      this.member.photos.splice(index, 1);
-      this.toastr.success("You successfully deleted the photo!")
-    })
+    this.confirmService.confirm('Confirm deletion', 'Are you sure you want to delete the photo?', 'Yes', 'No').subscribe(result => {
+      if (result) {
+        this.memberService.deletePhoto(photo.id).subscribe(() => {
+          const index = this.member.photos.indexOf(photo);
+          this.member.photos.splice(index, 1);
+          this.toastr.success("You successfully deleted the photo!")
+        })
+      };
+    });
   }
 
 }

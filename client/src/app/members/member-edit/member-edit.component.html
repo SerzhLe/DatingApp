@@ -1,9 +1,9 @@
 <div class="row" *ngIf="member">
-  <div class="col-4 p-2">
+  <div class="col-4">
     <h2>Your profile</h2>
   </div>
   <div class="col-8">
-    <div class="alert alert-warning m-0" *ngIf="editForm.dirty">
+    <div class="alert alert-warning m-0 py-1" *ngIf="editForm.dirty">
       <!-- Show alert when form is dirty - means that it was provided with some changes -->
       <strong>Warning!</strong> You have made changes. Any unsaved data will be
       lost

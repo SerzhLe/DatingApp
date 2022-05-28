@@ -7,6 +7,7 @@
     }
 }
 
+/* Cards */
 .card-img-wrapper {
     overflow: hidden;
     position: relative;
@@ -33,6 +34,7 @@
     opacity: 1;
 }
 
+/* User photo */
 .user-avatar {
     width: 50px;
     height: 50px;
@@ -43,10 +45,12 @@
     transition: all 0.3s ease-in-out;
 }
 
+/* Columns */
 .col-2 {
     width: 20%;
 }
 
+/* Buttons */
 .btn {
     white-space: nowrap;
 }
@@ -118,4 +122,10 @@
 .btn-check:focus + .btn, .btn:focus {
     outline: 0;
     box-shadow: none !important;
+}
+
+
+/* Modals */
+.modal-header, .modal-body, .modal-footer {
+    padding: 1rem !important;
 }

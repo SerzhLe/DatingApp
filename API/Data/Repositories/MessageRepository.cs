@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
@@ -64,18 +65,18 @@ namespace API.Data.Repositories
         {
             var query = _context.Messages
                             .OrderByDescending(m => m.MessageSent)
+                            .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
                             .AsQueryable();
 
             query = messageParams.Container switch
             {
-                "Inbox" => query.Where(m => m.Recipient.UserName == messageParams.UserName && !m.DeletedByRecipient),
-                "Outbox" => query.Where(m => m.Sender.UserName == messageParams.UserName && !m.DeleteBySender),
-                _ => query.Where(m => m.Recipient.UserName == messageParams.UserName && m.MessageRead == null && !m.DeletedByRecipient)
+                "Inbox" => query.Where(m => m.RecipientUserName == messageParams.UserName && !m.DeletedByRecipient),
+                "Outbox" => query.Where(m => m.SenderUserName == messageParams.UserName && !m.DeleteBySender),
+                _ => query.Where(m => m.RecipientUserName == messageParams.UserName && m.MessageRead == null && !m.DeletedByRecipient)
             };
 
-            var message = query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider);
 
-            return await PagedList<MessageDto>.CreateAsync(message, messageParams.PageNumber, messageParams.PageSize);
+            return await PagedList<MessageDto>.CreateAsync(query, messageParams.PageNumber, messageParams.PageSize);
         }
 
         public async Task<int> GetCountOfUnreadMessages(string username)
@@ -86,9 +87,9 @@ namespace API.Data.Repositories
         public async Task<(IEnumerable<MessageDto> messages, int unreadMessagesCount)>
             GetMessageThread(string currentUserName, string recipientUserName)
         {
-            var messages = await _context.Messages
-                                    .Include(m => m.Sender).ThenInclude(p => p.Photos) //because we do not projecting but loading to memory
-                                    .Include(m => m.Recipient).ThenInclude(p => p.Photos)
+            int unreadMessagesCount;
+
+            var messages = await _context.Messages //with projection we do not need to eager loade
                                     .Where(m => m.Recipient.UserName == currentUserName
                                             && m.Sender.UserName == recipientUserName //all messages that another user sent to logged in user
                                             && !m.DeletedByRecipient
@@ -96,23 +97,13 @@ namespace API.Data.Repositories
                                             && m.Sender.UserName == currentUserName  //all messages that logged in user sent to another user
                                             && !m.DeleteBySender
                                     )
+                                    .MarkUnreadAsRead(currentUserName, out unreadMessagesCount) //extension method for marking unread messages
                                     .OrderBy(m => m.MessageSent)
+                                    .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
                                     .ToListAsync();
 
-            var unreadMessages = messages.Where(m => m.MessageRead == null && m.Recipient.UserName == currentUserName).ToList();
-            var unreadMessagesCount = unreadMessages.Count;
-
-            if (unreadMessagesCount > 0)
-            {
-                foreach (var message in unreadMessages) //if message was unread - make it read
-                {
-                    message.MessageRead = DateTime.UtcNow;
-                }
-
-                await _context.SaveChangesAsync();
-            }
-
-            var result = (_mapper.Map<IEnumerable<MessageDto>>(messages), unreadMessagesCount);
+            var result = (messages, unreadMessagesCount);
+            //optimization - projecting before ToListAsync!
 
             return result;
         }
@@ -120,11 +111,6 @@ namespace API.Data.Repositories
         public void RemoveConnection(Connection connection)
         {
             _context.Connections.Remove(connection);
-        }
-
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

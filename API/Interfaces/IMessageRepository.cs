@@ -25,6 +25,5 @@ namespace API.Interfaces
 
         Task<(IEnumerable<MessageDto> messages, int unreadMessagesCount)> GetMessageThread(string currentUsername, string recipientUsername);
         Task<int> GetCountOfUnreadMessages(string username);
-        Task<bool> SaveAllAsync();
     }
 }

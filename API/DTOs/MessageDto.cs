@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace API.DTOs
@@ -15,8 +16,15 @@ namespace API.DTOs
         public string RecipientUserName { get; set; }
         public string RecipientPhotoUrl { get; set; }
         public string Content { get; set; }
-        //remove ? nullable type because automapper did not want to map this type in DateTime Utc
-        public DateTime MessageRead { get; set; }
+        public DateTime? MessageRead { get; set; }
         public DateTime MessageSent { get; set; }
+
+        //we do not want to send back to client these properties but we need to access them 
+        [JsonIgnore]
+        public bool DeleteBySender { get; set; }
+
+        [JsonIgnore]
+
+        public bool DeletedByRecipient { get; set; }
     }
 }

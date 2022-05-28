@@ -21,17 +21,15 @@ namespace API.Controllers
     public class UsersController : BaseApiController
     {
         //dependency injection
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
-        private readonly ILikesRepository _likesRepository;
-        public UsersController(IUserRepository userRepository, IMapper mapper,
-            IPhotoService photoService, ILikesRepository likesRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public UsersController(IUnitOfWork unitOfWork, IMapper mapper,
+            IPhotoService photoService)
         {
-            _likesRepository = likesRepository;
+            _unitOfWork = unitOfWork;
             _photoService = photoService;
             _mapper = mapper;
-            _userRepository = userRepository;
         }
 
         //[Authorize(Roles = "Admin")] //with this only admin can access this API - temporary test roles
@@ -43,17 +41,16 @@ namespace API.Controllers
         //we add help apicontroller by passing [FromQuery] - to indicate that this obj UserParams will be added with query string in http request
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetAllUsers([FromQuery] UserParams userParams) //https://localhost:5001/api/users
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetCurrentUserName());
-
-            userParams.CurrentUserName = user.UserName;
+            userParams.CurrentUserName = User.GetCurrentUserName();
+            var gender = await _unitOfWork.UserRepository.GetUserGender(userParams.CurrentUserName);
 
             if (string.IsNullOrEmpty(userParams.Gender))
-                userParams.Gender = user.Gender == "male" ? "female" : "male";
+                userParams.Gender = gender == "male" ? "female" : "male";
 
             //when calling database - ALWAYS use asynchronous
-            var users = await _userRepository.GetMembersAsync(userParams);
+            var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);
 
-            var likes = await _likesRepository.GetAllUserLikesAsync("liked", user.Id);
+            var likes = await _unitOfWork.LikesRepository.GetAllUserLikesAsync("liked", User.GetUserId());
 
             foreach (var member in users) //to find what users are liked
             {
@@ -77,11 +74,9 @@ namespace API.Controllers
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<ActionResult<MemberDto>> GetUser(string username) //https://localhost:5001/api/users/2
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetCurrentUserName());
+            var askedUser = await _unitOfWork.UserRepository.GetMemberAsync(username);
 
-            var askedUser = await _userRepository.GetMemberAsync(username);
-
-            var likes = await _likesRepository.GetAllUserLikesAsync("liked", user.Id);
+            var likes = await _unitOfWork.LikesRepository.GetAllUserLikesAsync("liked", User.GetUserId());
 
             if (likes.SingleOrDefault(u => u.LikedUserId == askedUser.Id) != null)
                 askedUser.IsLiked = true;
@@ -92,15 +87,13 @@ namespace API.Controllers
         [HttpPut] //Put when we change data
         public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
         {
-            var username = User.GetCurrentUserName(); //we are getting username from claims in token
-
-            var user = await _userRepository.GetUserByUsernameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(User.GetUserId());
 
             _mapper.Map(memberUpdateDto, user); //copy all properties of memberUpdateDto to user
 
-            _userRepository.UpdateProfile(user);
+            _unitOfWork.UserRepository.UpdateProfile(user);
 
-            if (await _userRepository.SaveAllAsync()) return NoContent(); ///this method will be called ONLY if changes are detected
+            if (await _unitOfWork.Complete()) return NoContent(); ///this method will be called ONLY if changes are detected
             //because we explicitly UpdateProfile() - we guarantee that changes are made even if there are no changes - it prevents us from 
             //exception when saving changes
 
@@ -112,7 +105,7 @@ namespace API.Controllers
         {
             var username = User.GetCurrentUserName();
 
-            var user = await _userRepository.GetUserByUsernameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetUserWithPhotosByUsernameAsync(username);
 
             var result = await _photoService.UploadImageAsync(file);
 
@@ -133,7 +126,7 @@ namespace API.Controllers
             //Inside this 201 response must be location header - where you can get this resource
             //We need a location header to get photos without user
 
-            if (await _userRepository.SaveAllAsync())
+            if (await _unitOfWork.Complete())
             {
                 return CreatedAtRoute("GetUser", new { username = user.UserName }, _mapper.Map<Photo, PhotoDto>(photo));
             }
@@ -146,7 +139,7 @@ namespace API.Controllers
         {
             var username = User.GetCurrentUserName();
 
-            var user = await _userRepository.GetUserByUsernameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetUserWithPhotosByUsernameAsync(username);
 
             var photoToDelete = user.Photos.SingleOrDefault(p => p.Id == photoId);
 
@@ -161,7 +154,7 @@ namespace API.Controllers
 
             user.Photos.Remove(photoToDelete);
 
-            if (await _userRepository.SaveAllAsync()) return Ok();
+            if (await _unitOfWork.Complete()) return Ok();
 
             return BadRequest("Failed to delete the photo");
         }
@@ -171,7 +164,7 @@ namespace API.Controllers
         {
             var username = User.GetCurrentUserName();
 
-            var user = await _userRepository.GetUserByUsernameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetUserWithPhotosByUsernameAsync(username);
 
             var photoToMakeMain = user.Photos.SingleOrDefault(photo => photo.Id == photoId);
 
@@ -184,7 +177,7 @@ namespace API.Controllers
 
             photoToMakeMain.IsMain = true;
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();
+            if (await _unitOfWork.Complete()) return NoContent();
 
             return BadRequest("Failed to make photo as main");
         }

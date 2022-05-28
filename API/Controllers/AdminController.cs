@@ -43,13 +43,15 @@ namespace API.Controllers
         {
             if (roles == null) return BadRequest("Member must have at least one role");
 
-            var selectedRoles = roles.Split(',').ToArray(); //roles will go separated by comma
+            var selectedRoles = roles.Split(',').ToList(); //roles will go separated by comma
+            selectedRoles.Sort();
 
             var user = await _userManager.FindByNameAsync(username);
 
             if (user == null) return NotFound("Could not find user");
 
-            var userRoles = await _userManager.GetRolesAsync(user);
+            var userRoles = (await _userManager.GetRolesAsync(user)).ToList();
+            userRoles.Sort();
 
             if (Enumerable.SequenceEqual(selectedRoles, userRoles)) return BadRequest("User already has these roles");
 
