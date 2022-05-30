@@ -15,3 +15,7 @@
     position: absolute;
     white-space: nowrap;
 }
+
+.hide {
+    visibility: hidden;
+}

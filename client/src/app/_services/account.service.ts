@@ -5,6 +5,7 @@ import {map} from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../_models/user';
 import { MembersService } from './members.service';
+import { MessageService } from './message.service';
 import { PresenceService } from './presence.service';
 
 @Injectable({
@@ -15,7 +16,7 @@ export class AccountService {
   private currentUserSource = new ReplaySubject<User>(1); //buffer for storing User object - 1 amount - size of buffer
   currentUser$ = this.currentUserSource.asObservable();//as it will be an observable - it should have '$' at the end
 
-  constructor(private http: HttpClient, private memberService: MembersService, private presenceService: PresenceService) { }
+  constructor(private http: HttpClient, private memberService: MembersService, private presenceService: PresenceService, private messageService: MessageService) { }
 
   login(model: any) {
     return this.http.post(this.baseUrl + 'account/login', model).pipe(

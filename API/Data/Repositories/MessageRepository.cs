@@ -81,7 +81,9 @@ namespace API.Data.Repositories
 
         public async Task<int> GetCountOfUnreadMessages(string username)
         {
-            return await _context.Messages.Where(m => m.RecipientUserName == username).CountAsync(m => m.MessageRead == null);
+            return await _context.Messages
+                .Where(m => m.RecipientUserName == username && !m.DeletedByRecipient)
+                .CountAsync(m => m.MessageRead == null);
         }
 
         public async Task<(IEnumerable<MessageDto> messages, int unreadMessagesCount)>
@@ -89,18 +91,21 @@ namespace API.Data.Repositories
         {
             int unreadMessagesCount;
 
-            var messages = await _context.Messages //with projection we do not need to eager loade
+            var messagesWithoutDeletion = _context.Messages //with projection we do not need to eager loade
                                     .Where(m => m.Recipient.UserName == currentUserName
                                             && m.Sender.UserName == recipientUserName //all messages that another user sent to logged in user
-                                            && !m.DeletedByRecipient
                                             || m.Recipient.UserName == recipientUserName
                                             && m.Sender.UserName == currentUserName  //all messages that logged in user sent to another user
-                                            && !m.DeleteBySender
                                     )
                                     .MarkUnreadAsRead(currentUserName, out unreadMessagesCount) //extension method for marking unread messages
-                                    .OrderBy(m => m.MessageSent)
-                                    .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
-                                    .ToListAsync();
+                                    .AsQueryable();
+
+            var messages = await messagesWithoutDeletion
+                            .Where(m => m.Recipient.UserName == currentUserName && !m.DeletedByRecipient
+                                || m.Recipient.UserName == recipientUserName && !m.DeleteBySender)
+                            .OrderBy(m => m.MessageSent)
+                            .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
+                            .ToListAsync();
 
             var result = (messages, unreadMessagesCount);
             //optimization - projecting before ToListAsync!

@@ -2,9 +2,9 @@
   <div class="btn-group" name="container">
     <button
       class="btn"
-      [(ngModel)]="container"
+      [(ngModel)]="messageParams.container"
       [ngClass]="
-        container === 'Unread'
+        messageParams.container === 'Unread'
           ? 'btn-custom-secondary-active'
           : 'btn-custom-secondary'
       "
@@ -17,9 +17,9 @@
     </button>
     <button
       class="btn"
-      [(ngModel)]="container"
+      [(ngModel)]="messageParams.container"
       [ngClass]="
-        container === 'Inbox'
+        messageParams.container === 'Inbox'
           ? 'btn-custom-secondary-active'
           : 'btn-custom-secondary'
       "
@@ -32,9 +32,9 @@
     </button>
     <button
       class="btn"
-      [(ngModel)]="container"
+      [(ngModel)]="messageParams.container"
       [ngClass]="
-        container === 'Outbox'
+        messageParams.container === 'Outbox'
           ? 'btn-custom-secondary-active'
           : 'btn-custom-secondary'
       "
@@ -64,16 +64,18 @@
       [hidden]="loading"
       *ngFor="let message of messages"
       routerLink="{{
-        container === 'Outbox'
+        messageParams.container === 'Outbox'
           ? '/members/' + message.recipientUserName
           : '/members/' + message.senderUserName
       }}"
       [queryParams]="{ tab: 3 }"
       class="message"
     >
-      <td class="text-center">{{ message.content }}</td>
+      <td class="text-center">
+        <p class="message-content">{{ message.content }}</p>
+      </td>
       <td>
-        <div *ngIf="container !== 'Outbox'" class="text-start">
+        <div *ngIf="messageParams.container !== 'Outbox'" class="text-start">
           <img
             class="rounded-circle user-avatar me-1"
             src="{{ message.senderPhotoUrl || './assets/user.png' }}"
@@ -81,7 +83,7 @@
           />
           <strong>{{ message.senderUserName | titlecase }}</strong>
         </div>
-        <div *ngIf="container === 'Outbox'" class="text-start">
+        <div *ngIf="messageParams.container === 'Outbox'" class="text-start">
           <img
             class="rounded-circle user-avatar me-1"
             src="{{ message.recipientPhotoUrl || './assets/user.png' }}"

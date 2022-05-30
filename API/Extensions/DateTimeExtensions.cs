@@ -11,7 +11,9 @@ namespace API.Extensions
         {
             var today = DateTime.Today;
             var age = today.Year - dateOfBirth.Year;
-            if (today.Month < dateOfBirth.Month && today.Day < dateOfBirth.Day) age--;
+            if (today.Month < dateOfBirth.Month ||
+                today.Month == dateOfBirth.Month && today.Day < dateOfBirth.Day) age--;
+
             return age;
         }
 

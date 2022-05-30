@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { PageChangedEvent } from 'ngx-bootstrap/pagination';
 import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs/operators';
 import { Message } from '../_models/message';
+import { MessageParams } from '../_models/messageParams';
 import { Pagination } from '../_models/pagination';
 import { MessageService } from '../_services/message.service';
+import { PresenceService } from '../_services/presence.service';
 
 @Component({
   selector: 'app-messages',
@@ -13,12 +16,12 @@ import { MessageService } from '../_services/message.service';
 export class MessagesComponent implements OnInit {
   messages: Message[] = [];
   pagination: Pagination;
-  container = 'Unread';
-  pageNumber = 1;
-  pageSize = 10;
+  messageParams: MessageParams;
   loading = false;
 
-  constructor(private messageService: MessageService, private toastr: ToastrService) { }
+  constructor(private messageService: MessageService, private toastr: ToastrService) {
+    this.messageParams = new MessageParams();
+   }
 
   ngOnInit(): void {
     this.loadMessages();
@@ -26,7 +29,7 @@ export class MessagesComponent implements OnInit {
 
   loadMessages() {
     this.loading = true;
-    this.messageService.getMessages(this.pageNumber, this.pageSize, this.container).subscribe( {
+    this.messageService.getMessages(this.messageParams).subscribe( {
       next: response => {
         this.messages = response.result;
         this.pagination = response.pagination;
@@ -36,14 +39,14 @@ export class MessagesComponent implements OnInit {
   }
 
   pageChanged(event: PageChangedEvent) {
-    if (this.pageNumber !== event.page) {
-      this.pageNumber = event.page;
+    if (this.messageParams.pageNumber !== event.page) {
+      this.messageParams.pageNumber = event.page;
       this.loadMessages();
     }
   }
 
   deleteMessage(message: Message) {
-    this.messageService.deleteMessage(message.id).subscribe({
+    this.messageService.deleteMessage(message, this.messageParams).subscribe({
       next: response => {
         const index = this.messages.indexOf(message);
         this.messages.splice(index, 1);
@@ -51,4 +54,5 @@ export class MessagesComponent implements OnInit {
       }
     })
   }
+
 }

@@ -6,11 +6,13 @@ import { Message } from '../_models/message'
 import { MessageToCreate } from '../_models/messageToCreate';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { User } from '../_models/user';
-import { BehaviorSubject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { BehaviorSubject, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { Group } from '../_models/group';
 import { PresenceService } from './presence.service';
+import { MessageParams } from '../_models/messageParams';
+import { PaginatedResult } from '../_models/pagination';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +21,7 @@ export class MessageService {
   private baseUrl = environment.apiUrl;
   private hubUrl = environment.hubUrl;
   private hubConnection: HubConnection;
+
   private messageThreadSource = new BehaviorSubject<Message[]>([]);
   messageThread$ = this.messageThreadSource.asObservable();
 
@@ -73,10 +76,11 @@ export class MessageService {
     this.hubConnection.stop().catch(error => console.log(error));
   }
 
-  getMessages(pageNumber: number, pageSize: number, container: string) {
-    let params = getPaginationHeader(pageNumber, pageSize);
+  getMessages(messageParams: MessageParams) {
 
-    params = params.append('container', container);
+    let params = getPaginationHeader(messageParams.pageNumber, messageParams.pageSize);
+
+    params = params.append('container', messageParams.container);
 
     return getPaginatedResult<Message[]>(this.baseUrl + 'messages', params, this.http);
   }
@@ -86,7 +90,15 @@ export class MessageService {
       .catch(error => console.log(error));
   }
 
-  deleteMessage(id: number) {
-    return this.http.delete(this.baseUrl + 'messages/' + id);
+  deleteMessage(message: Message, messageParams: MessageParams) {
+    return this.http.delete(this.baseUrl + 'messages/' + message.id).pipe(
+      map(() => {
+        if (!message.messageRead && messageParams.container !== 'Outbox') {
+          this.presence.unreadMessagesCount$.pipe(take(1)).subscribe(count => {
+            this.presence.unreadMessagesCountSource.next(--count);
+          });
+        }
+      })
+    );
   }
 }

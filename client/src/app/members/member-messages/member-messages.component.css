@@ -1,3 +1,9 @@
+p {
+    width: 40ch;
+    overflow-wrap: break-word;
+    font-size: 1.1rem;
+}
+
 .fa-clock-o:before {
     margin-right: 0.25rem;
 }
@@ -11,7 +17,6 @@
 }
 
 
-
 .chat {
     overflow-y: auto;
     height: 500px;
@@ -23,8 +28,8 @@
 }
 
 .message {
-    border-bottom: 1px solid rgba(255,255,255, 0.2);
-    padding-left: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255, 0.1);
+    padding: 1.5rem 0.5rem;
 }
 
 

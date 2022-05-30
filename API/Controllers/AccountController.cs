@@ -77,7 +77,7 @@ namespace API.Controllers
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            if (!result.Succeeded) return Unauthorized();
+            if (!result.Succeeded) return Unauthorized("Invalid password");
 
             //DO NOT USE MORE this custom authentication - we will use Identity 
             //using var hmac = new HMACSHA512(user.PasswordSalt); //every time a hash for definite string will be not the same

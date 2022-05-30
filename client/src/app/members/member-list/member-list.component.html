@@ -97,7 +97,11 @@
 </div>
 
 <div class="row mt-5">
-  <div *ngFor="let member of members" class="col-2">
+  <div
+    *ngFor="let member of members"
+    class="col-2"
+    [ngClass]="{ hide: loading }"
+  >
     <app-member-card [member]="member"></app-member-card>
   </div>
   <h3 *ngIf="members?.length <= 0 && !loading">No members found..</h3>

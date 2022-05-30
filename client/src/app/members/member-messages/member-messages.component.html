@@ -12,11 +12,20 @@
     >
       <!-- FOR HAVING SCROLL AT BOTTOM -->
       <li
-        class="message mt-2"
+        class="message"
         *ngFor="let message of messageService.messageThread$ | async"
       >
-        <div>
-          <span class="chat-img">
+        <div
+          class="d-flex"
+          [ngClass]="{
+            'justify-content-end text-end me-1':
+              message.recipientUserName === recipientUserName
+          }"
+        >
+          <span
+            class="chat-img me-1"
+            *ngIf="message.recipientUserName !== recipientUserName"
+          >
             <img
               src="{{ message.senderPhotoUrl || '../assets/user.png' }}"
               alt="{{ message.senderUserName }}"
