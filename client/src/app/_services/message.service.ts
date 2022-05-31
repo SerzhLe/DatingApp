@@ -85,7 +85,7 @@ export class MessageService {
     return getPaginatedResult<Message[]>(this.baseUrl + 'messages', params, this.http);
   }
 
-  async createMessage(message: MessageToCreate) { //async because returns Promise
+  async createMessage(message: MessageToCreate) {
     return this.hubConnection.invoke('SendMessage', message)
       .catch(error => console.log(error));
   }

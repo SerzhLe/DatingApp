@@ -91,13 +91,13 @@ namespace API.Data.Repositories
         {
             int unreadMessagesCount;
 
-            var messagesWithoutDeletion = _context.Messages //with projection we do not need to eager loade
+            var messagesWithoutDeletion = _context.Messages
                                     .Where(m => m.Recipient.UserName == currentUserName
-                                            && m.Sender.UserName == recipientUserName //all messages that another user sent to logged in user
+                                            && m.Sender.UserName == recipientUserName
                                             || m.Recipient.UserName == recipientUserName
-                                            && m.Sender.UserName == currentUserName  //all messages that logged in user sent to another user
+                                            && m.Sender.UserName == currentUserName
                                     )
-                                    .MarkUnreadAsRead(currentUserName, out unreadMessagesCount) //extension method for marking unread messages
+                                    .MarkUnreadAsRead(currentUserName, out unreadMessagesCount)
                                     .AsQueryable();
 
             var messages = await messagesWithoutDeletion
@@ -108,7 +108,7 @@ namespace API.Data.Repositories
                             .ToListAsync();
 
             var result = (messages, unreadMessagesCount);
-            //optimization - projecting before ToListAsync!
+
 
             return result;
         }

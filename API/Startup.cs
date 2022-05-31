@@ -26,68 +26,60 @@ namespace API
 {
     public class Startup
     {
-        //dependency injection
         private readonly IConfiguration _config;
         public Startup(IConfiguration config)
         {
             _config = config;
         }
 
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        //Inside this method the ordering is not necessary
         public void ConfigureServices(IServiceCollection services)
         {
-            //inside this method there were too many add services - we cut some of them and paste in extension method in ApplicationServiceExtensions
-            services.AddApplicationServices(_config); //this customized method in ApplicationServiceExtensions
+            services.AddApplicationServices(_config);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv5", Version = "v1" });
             });
-            services.AddCors(); //add CORS to allow http requests use our API
+            services.AddCors();
 
-            services.AddIdentityServices(_config); //it is also extension customized method 
+            services.AddIdentityServices(_config);
 
             services.AddSignalR();
         }
 
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        //In this method ordering is VERY IMPORTANT
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
-                //     app.UseDeveloperExceptionPage(); //throw exceptions to the app if needed
-                app.UseSwagger(); //this is a tool like a Postman
+                app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
             }
 
-            //instead of UseDeveloperExceptionPage that causes the exceptions - we use our own
-            app.UseMiddleware<ExceptionMiddleware>(); //when we get an exception it will be carried out by our ExceptionMiddleware
-
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            //very important place it after Routing
             app.UseCors(policy => policy
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials()// need supply when using SignalR and we want to send token to query string
+                .AllowCredentials()
                 .WithOrigins("https://localhost:4200"));
 
-            app.UseAuthentication(); //important to place here!
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers(); //endpoints - map to our apicontrollers
+                endpoints.MapControllers();
                 endpoints.MapHub<MessageHub>("hubs/message");
-                endpoints.MapHub<PresenceHub>("hubs/presence"); //cause we will have more than one hub
+                endpoints.MapHub<PresenceHub>("hubs/presence");
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }

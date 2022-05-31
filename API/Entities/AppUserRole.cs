@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class AppUserRole : IdentityUserRole<int> //join table that will join users and their roles
+    public class AppUserRole : IdentityUserRole<int>
     {
         public AppUser User { get; set; }
         public AppRole Role { get; set; }

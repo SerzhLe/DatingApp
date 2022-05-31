@@ -11,8 +11,7 @@ import { AccountService } from '../_services/account.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  //@Input() usersFromHomeComponent: any; //in order to put users got from home comp to register comp
-  @Output() cancelRegister = new EventEmitter(); //in order to pass action from child (register) to parent (home) comp
+  @Output() cancelRegister = new EventEmitter()
   registerForm: FormGroup;
   maxDate: Date;
   validationErrors: string[] = [];
@@ -21,7 +20,7 @@ export class RegisterComponent implements OnInit {
     private accountService: AccountService,
     private toastr: ToastrService,
     private router: Router,
-    private fb: FormBuilder //instead of manual creation of form - we use service
+    private fb: FormBuilder
     ) { }
 
   ngOnInit(): void {
@@ -31,7 +30,7 @@ export class RegisterComponent implements OnInit {
   }
 
   initializeForm() {
-    this.registerForm = this.fb.group({ //we just mad our code smaller - instead of this.fb we would need to create new FormGroup and new FormControl
+    this.registerForm = this.fb.group({
       gender: ['male'],
       username: ['', Validators.required],
       knownAs: ['', Validators.required],
@@ -50,19 +49,14 @@ export class RegisterComponent implements OnInit {
       ]]
     });
 
-    //this is useful when you change the password after typing the confirm pass - it will reset the validation to check pass identity
-
-    this.registerForm.controls.password.valueChanges.subscribe(() => { //valueChanges - is observable - emit event every time control changes
-      this.registerForm.controls.confirmPassword.updateValueAndValidity(); //every time password is changes - it resets the validation of confirm password
+    this.registerForm.controls.password.valueChanges.subscribe(() => { 
+      this.registerForm.controls.confirmPassword.updateValueAndValidity(); 
     })
   }
 
-
-  //if you type any value in password - this error will check to confirm pass 
-  //BUT if you then change password - it will say that confirm pass is valid - !!
   matchValues(matchTo: string) : ValidatorFn {
     return (control: AbstractControl) => {
-      return control?.value === control?.parent?.controls[matchTo].value ? null : { notMatching: true }; //dynamic value
+      return control?.value === control?.parent?.controls[matchTo].value ? null : { notMatching: true };
     }
   }
 
@@ -88,5 +82,4 @@ export class RegisterComponent implements OnInit {
   cancel() {
     this.cancelRegister.emit(false);
   }
-
 }

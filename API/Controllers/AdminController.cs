@@ -18,14 +18,13 @@ namespace API.Controllers
             _userManager = userManager;
         }
 
-        //these policy are created in identityserviceextension
         [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("users-with-roles")]
         public async Task<ActionResult> GetUsersWithRolesAsync()
         {
             var users = await _userManager.Users
-                .Include(r => r.UserRoles) //join with AppUserRole table
-                .ThenInclude(r => r.Role) //then join with AppRole table
+                .Include(r => r.UserRoles)
+                .ThenInclude(r => r.Role)
                 .OrderBy(u => u.UserName)
                 .Select(u => new
                 {
@@ -43,7 +42,7 @@ namespace API.Controllers
         {
             if (roles == null) return BadRequest("Member must have at least one role");
 
-            var selectedRoles = roles.Split(',').ToList(); //roles will go separated by comma
+            var selectedRoles = roles.Split(',').ToList();
             selectedRoles.Sort();
 
             var user = await _userManager.FindByNameAsync(username);
@@ -55,11 +54,11 @@ namespace API.Controllers
 
             if (Enumerable.SequenceEqual(selectedRoles, userRoles)) return BadRequest("User already has these roles");
 
-            var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles)); //will add different roles from userRoles
+            var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
 
             if (!result.Succeeded) return BadRequest(result.Errors);
 
-            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles)); //remove all diference from selectedRoles
+            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
 
             if (!result.Succeeded) return BadRequest(result.Errors);
 

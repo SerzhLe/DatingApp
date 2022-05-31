@@ -5,22 +5,14 @@ using System.Threading.Tasks;
 
 namespace API.SignalR
 {
-    //it will be a store for users that are online
-    //this approach is OK for a single server
-
-    //IMPORTANT!! This service must be a single services among all connections!
     public class PresenceTracker
     {
-        //first type - its users' username, second - their string id - 
-        //why list? because one user can connect from differenc devices and for each device will be another string
         private static readonly Dictionary<string, List<string>> OnlineUsers = new Dictionary<string, List<string>>();
 
         public Task<bool> UserConnected(string username, string connectionId)
         {
             bool isFirstConnected = false;
-            //here we need to be careful
-            //it two users at the same time will update dictionary - we will have problems
-            //use lock! to prevent unpredictable work with dictionary
+
             lock (OnlineUsers)
             {
                 if (OnlineUsers.ContainsKey(username))
@@ -73,7 +65,7 @@ namespace API.SignalR
             List<string> connectionIds;
             lock (OnlineUsers)
             {
-                connectionIds = OnlineUsers.GetValueOrDefault(username); //default - null
+                connectionIds = OnlineUsers.GetValueOrDefault(username);
             }
 
             return Task.FromResult(connectionIds);

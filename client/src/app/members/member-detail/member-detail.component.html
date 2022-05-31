@@ -24,7 +24,6 @@
         <div>
           <strong>Last Active:</strong>
           <p>{{ member.lastActive | timeago }}</p>
-          <!--Custom pipe - downloaded from ngx-timeago-->
         </div>
         <div>
           <strong>Member since:</strong>
@@ -33,12 +32,6 @@
       </div>
       <div class="custom-card-footer">
         <div class="d-flex align-items-center justify-content-center">
-          <!-- <button
-            class="btn btn-primary"
-            (click)="member.isLiked ? deleteLike() : addLike()"
-          >
-            {{ member.isLiked ? "Dislike" : "Like" }}
-          </button> -->
           <button class="btn btn-danger" (click)="selectTab(3)">Message</button>
           <i
             class="fa fa-heart"
@@ -57,7 +50,6 @@
         class="pb-2"
         (selectTab)="onTabActivated($event)"
       >
-        <!-- Now when we select the tab - it calls onTabActivated() and if tab heading is Messages - then load messages -->
         <h4 class="mt-2">Description</h4>
         <p>{{ member.introduction }}</p>
         <p *ngIf="!member.introduction">
@@ -84,8 +76,6 @@
         ></ngx-gallery
       ></tab>
       <tab heading="Messages" (selectTab)="onTabActivated($event)">
-        <!-- We want construct this component ONLY when user clicks on tab Messages. 
-          By default - when constructs parent (this comp) - constructs also a child -->
         <app-member-messages
           [recipientUserName]="member.userName"
         ></app-member-messages>

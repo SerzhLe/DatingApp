@@ -21,15 +21,14 @@ export class ErrorInterceptor implements HttpInterceptor {
         if (error) {
           switch (error.status) {
             case 400:
-              if (error.error.errors) { //if the error has array of errors in error object
+              if (error.error.errors) { 
                 const modalStateErrors = [];
                 for (const key in error.error.errors) {
                   if (error.error.errors[key]) {
                     modalStateErrors.push(error.error.errors[key]);
                   }
                 }
-                throw modalStateErrors.flat(); //this is used to show errors below the inputs - if u wan to use flat() - specify in tsconfig.json "es2019" 
-              //flat - if we do not use flat thatn we goet array of arrays but because of flat we got array of strings
+                throw modalStateErrors.flat();
               }
               else if (typeof(error.error) === 'object') {
                 this.toastr.error(error.statusText === 'OK' ? 'Bad Request' : error.statusText, error.status);
@@ -49,7 +48,7 @@ export class ErrorInterceptor implements HttpInterceptor {
               this.router.navigateByUrl('/not-found');
               break;
             case 500:
-              const navigationExtras: NavigationExtras = { state: {error: error.error}}; //эту ошибку мы передаем на маршрут /server-error
+              const navigationExtras: NavigationExtras = { state: {error: error.error}};
               this.router.navigateByUrl('/server-error', navigationExtras);
               break;
             default:
@@ -59,7 +58,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           }
         }
         return throwError(error);
-      }) //error - is http response error
+      }) 
     );
   }
 }

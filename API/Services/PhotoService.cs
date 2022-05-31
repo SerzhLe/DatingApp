@@ -14,11 +14,9 @@ namespace API.Services
     {
         private readonly Cloudinary _cloud;
 
-        public PhotoService(IOptions<CloudinarySettings> config) //когда нужно добраться до CloudinarySettings
+        public PhotoService(IOptions<CloudinarySettings> config)
         {
             var account = new Account(config.Value.CloudName, config.Value.ApiKey, config.Value.ApiSecret);
-            //get an account with default instance of config
-
             _cloud = new Cloudinary(account);
         }
 
@@ -37,13 +35,12 @@ namespace API.Services
 
             if (file.Length > 0)
             {
-                using var stream = file.OpenReadStream(); //open stream to read the file in the future
+                using var stream = file.OpenReadStream();
 
                 var uploadParams = new ImageUploadParams()
                 {
                     File = new FileDescription(file.FileName, stream),
-                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face") //500 px
-                    //this transformation will make image square 500x500 and focus on face
+                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
                 };
 
                 uploadResult = await _cloud.UploadAsync(uploadParams);

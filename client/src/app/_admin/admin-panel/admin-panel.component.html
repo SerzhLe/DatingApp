@@ -6,7 +6,6 @@
         <app-user-management></app-user-management>
       </div>
     </tab>
-    <!-- only admin can have access to it-->
     <tab heading="Photo management" *appHasRole="['Admin', 'Moderator']">
       <div class="container">
         <app-photo-management></app-photo-management>

@@ -27,8 +27,8 @@ namespace API.Data.Repositories
         {
             return await _context.Users
             .Where(u => u.UserName == username)
-            //with ProjectTo we do not need specify Include() method
-            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider) //kind of optimization - we do not need to load all users than load them in memory and copy in members
+
+            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
         }
 
@@ -59,10 +59,6 @@ namespace API.Data.Repositories
                     _ => query.OrderBy(u => u.LastActive)
                 };
             }
-
-
-            //these returned entities will not be tracked by EF - AsNoTracking()
-            //this is kind of optimization - use method when we need readonly list of entities
 
             return await PagedList<MemberDto>.CreateAsync(query
                 .ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), userParams.PageNumber, userParams.PageSize);

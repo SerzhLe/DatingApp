@@ -14,7 +14,6 @@ export class AppComponent implements OnInit {
   title = 'The Dating app';
   users: any;
 
-  //dependency injection
   constructor(private accountService: AccountService, private presenceService: PresenceService) {}
 
   ngOnInit() {

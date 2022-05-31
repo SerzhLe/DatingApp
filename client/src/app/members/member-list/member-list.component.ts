@@ -30,8 +30,6 @@ export class MemberListComponent implements OnInit, OnDestroy {
       if(!this.memberService.userParams)  this.memberService.userParams = new UserParams(this.user);
     })
    }
-   
-   //constructor calls first, than calls ngOnInit()!
 
    ngOnInit(): void {
      this.userParams = this.memberService.userParams;
@@ -40,7 +38,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
       if (localStorage.getItem('user')) 
-        this.memberService.userParams = this.userParams; //this method calls AFTER the logout method
+        this.memberService.userParams = this.userParams;
     }
 
   loadMembers() {
@@ -50,7 +48,6 @@ export class MemberListComponent implements OnInit, OnDestroy {
       this.pagination = response.pagination;
       this.loading = false;
     });
-    //we do not add pipe and take(1) because it is http response and it is completed once we subscribe
   }
 
   resetFilters() {

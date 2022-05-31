@@ -8,7 +8,6 @@ using AutoMapper;
 
 namespace API.Data
 {
-    //for each request will be one instance of each repository and ONLY one instance of data context for all repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly DataContext _context;

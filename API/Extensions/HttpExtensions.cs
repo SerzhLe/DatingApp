@@ -14,13 +14,11 @@ namespace API.Extensions
         {
             var paginationHeader = new PaginationHeader(currentPage, itemsPerPage, totalItems, totalPages);
 
-            //when you add your custom header to the http response - you MUST add CORS header to make ur custom header available
             var options = new JsonSerializerOptions();
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; //in order to get json object with camelCase properties
+            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
             response.Headers.Add("Pagination", JsonSerializer.Serialize<PaginationHeader>(paginationHeader, options));
 
-            //you CANNOT specify random name here - only EXACT same strings as below
             response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
         }
     }

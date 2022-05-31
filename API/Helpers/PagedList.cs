@@ -18,8 +18,8 @@ namespace API.Helpers
             CurrentPage = pageNumber;
             PageSize = pageSize;
             TotalCount = count;
-            TotalPages = (int)Math.Ceiling((double)(count / pageSize)); //e.g. 22 / 5 = 4,.. - return 5
-            AddRange(items); //add items to the collection (PagedList)
+            TotalPages = (int)Math.Ceiling((double)(count / pageSize));
+            AddRange(items);
         }
 
         public static async Task<PagedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)

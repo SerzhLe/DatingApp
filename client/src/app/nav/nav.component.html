@@ -1,14 +1,10 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
-    <!-- / - default url of the site -->
     <div class="container">
       <div class="collapse navbar-collapse" id="navbarColor01">
         <a class="navbar-brand" routerLink="/">DatingApp</a>
         <ul class="navbar-nav me-auto">
-          <!-- show navbar if currentUser exists -->
-          <!-- ngIf - hide ul element if loggedIn = false-->
           <ng-container *ngIf="accountService.currentUser$ | async">
-            <!-- This container is not a HTML element - it just useful when you need to give a condition to the part of div elements-->
             <li class="nav-item">
               <a
                 class="nav-link"
@@ -16,7 +12,6 @@
                 routerLinkActive="active"
                 >Matches
               </a>
-              <!-- routelinkactive - when tap on link - it become white-->
             </li>
             <li class="nav-item">
               <a class="nav-link" routerLink="/lists" routerLinkActive="active"
@@ -45,11 +40,6 @@
               >
             </li>
           </ng-container>
-          <!-- <li class="nav-item">
-            <a class="nav-link" routerLink="/errors" routerLinkActive="active"
-              >Errors</a
-            >
-          </li> -->
         </ul>
         <div
           *ngIf="accountService.currentUser$ | async as user"
@@ -61,7 +51,6 @@
             class="rounded-circle user-avatar"
           />
           <div style="cursor: pointer" class="dropdown" dropdown>
-            <!-- now we can use User object because of "as"-->
             <a class="nav-link dropdown-toggle text-light" dropdownToggle
               >Welcome, {{ user.knownAs || user.userName }}!</a
             >

@@ -100,9 +100,6 @@
           (click)="deleteMessage(message)"
           (click)="$event.stopPropagation()"
         >
-          <!-- To prevent routerLink by clicking the button in Angular 13 and more you just need to pass to routerLink null or undefined (disable link) -->
-          <!-- In Angular 12 and less we need to stop propagation - to stop passing click event  -->
-
           Delete
         </button>
       </td>

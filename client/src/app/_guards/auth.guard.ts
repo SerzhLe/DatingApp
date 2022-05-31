@@ -8,9 +8,7 @@ import { AccountService } from '../_services/account.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate { //guards automatically subscribes on Observables
-  //Please, keep in mind that it protects unloogged in user get the routes of protected elements, but it is not a security!
-  //it is just a method of not showing this elements if user is not logged in
+export class AuthGuard implements CanActivate {
   
   constructor(private accountService: AccountService, private toastr: ToastrService) { }
   canActivate(): Observable<boolean> {

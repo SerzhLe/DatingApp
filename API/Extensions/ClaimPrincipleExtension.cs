@@ -10,7 +10,7 @@ namespace API.Extensions
     {
         public static string GetCurrentUserName(this ClaimsPrincipal claims)
         {
-            return claims.FindFirst(ClaimTypes.Name)?.Value; //represent ClaimNames.UniqueName
+            return claims.FindFirst(ClaimTypes.Name)?.Value;
         }
 
         public static int GetUserId(this ClaimsPrincipal claims)

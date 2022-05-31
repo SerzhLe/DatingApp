@@ -8,20 +8,17 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Helpers
 {
-    //class is used for updating the info of Last Active time of each user - implementing "action filter"
-    //need to use it as a service
     public class LogUserActivity : IAsyncActionFilter
     {
-        //add ServiceFilter to BaseApiController
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) //next - is what happens after response execution
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var resultContext = await next();
 
-            if (!resultContext.HttpContext.User.Identity.IsAuthenticated) return; //check if user is logged in
+            if (!resultContext.HttpContext.User.Identity.IsAuthenticated) return;
 
-            var userId = resultContext.HttpContext.User.GetUserId(); //get userId
+            var userId = resultContext.HttpContext.User.GetUserId();
 
-            var uow = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();  //get service of user repos
+            var uow = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
 
             var user = await uow.UserRepository.GetUserByIdAsync(userId);
 

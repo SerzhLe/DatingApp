@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.SignalR;
 namespace API.SignalR
 {
     [Authorize]
-    //we will user WebSocket API to implement interactive communication
     public class PresenceHub : Hub
     {
         private readonly PresenceTracker _presenceTracker;
@@ -24,12 +23,8 @@ namespace API.SignalR
 
         public override async Task OnConnectedAsync()
         {
-            //clients - all clients connected to hub, others - all users connected to hub except the one whi invoke this method
-            //this method called when someone connects to hub
-            //string - method that we will call on client, and username - is parameter that we will pass to this method
-
             var isOnline = await _presenceTracker.UserConnected(Context.User.GetCurrentUserName(), Context.ConnectionId);
-            if (isOnline) //inform others ONLY if user first connected to site
+            if (isOnline)
                 await Clients.Others.SendAsync("UserIsOnline", Context.User.GetCurrentUserName());
 
             var onlineUsers = await _presenceTracker.GetOnlineUsers();

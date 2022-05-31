@@ -15,16 +15,13 @@ namespace API.Data
 {
     public class DataContext : IdentityDbContext<AppUser, AppRole, int,
         IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>,
-        IdentityRoleClaim<int>, IdentityUserToken<int>> //user, role, key...
-
-    //change dbcontext to identity - donwload nuget - microsoft.aspnetcore.identity.efcore 
+        IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public DataContext(DbContextOptions options)
             : base(options)
         {
         }
 
-        //public DbSet<AppUser> Users { get; set; } REMOVE THIS TABLE because IdentiyDbContext provides it
         public DbSet<UserLike> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Group> Groups { get; set; }
@@ -59,9 +56,6 @@ namespace API.Data
         public static Boolean IsUtc(this IMutableProperty property) =>
             ((Boolean?)property.FindAnnotation(IsUtcAnnotation)?.Value) ?? true;
 
-        /// <summary>
-        /// Make sure this is called after configuring all your entities.
-        /// </summary>
         public static void ApplyUtcDateTimeConverter(this ModelBuilder builder)
         {
             foreach (var entityType in builder.Model.GetEntityTypes())

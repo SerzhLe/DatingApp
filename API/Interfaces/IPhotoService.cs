@@ -8,7 +8,7 @@ namespace API.Interfaces
 {
     public interface IPhotoService
     {
-        Task<ImageUploadResult> UploadImageAsync(IFormFile file); //IFormFile - represents a file sent with http request
-        Task<DeletionResult> DeleteImageAsync(string publicId); //each image will have a public id
+        Task<ImageUploadResult> UploadImageAsync(IFormFile file);
+        Task<DeletionResult> DeleteImageAsync(string publicId);
     }
 }

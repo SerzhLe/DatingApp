@@ -17,7 +17,6 @@ namespace API.Interfaces
         Task<AppUser> GetUserWithPhotosByUsernameAsync(string username);
         Task<AppUser> GetUserByUsernameAsync(string username);
         Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);
-        //when we get members - we gonna return http reponse with header of pagination info
         Task<MemberDto> GetMemberAsync(string username);
         Task<string> GetUserGender(string username);
     }

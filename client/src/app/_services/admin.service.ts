@@ -17,6 +17,5 @@ export class AdminService {
 
   editRoles(username: string, roles: any[]) {
     return this.http.post<string[]>(this.baseUrl + 'admin/edit-roles/' + username + '?roles=' + roles, {});
-    //roles as array has toString - join array with comma
   }
 }

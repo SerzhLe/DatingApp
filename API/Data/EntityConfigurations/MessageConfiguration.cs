@@ -15,9 +15,9 @@ namespace API.Data.EntityConfigurations
             builder
                 .HasOne(m => m.Recipient)
                 .WithMany(m => m.MessagesReceived)
-                .OnDelete(DeleteBehavior.Restrict); //because i do not want to delete msgs if user do not delete them by themselves
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder 
+            builder
                 .HasOne(m => m.Sender)
                 .WithMany(m => m.MessagesSent)
                 .OnDelete(DeleteBehavior.Restrict);

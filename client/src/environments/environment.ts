@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:5001/api/', //to use it as global variable
+  apiUrl: 'https://localhost:5001/api/',
   hubUrl: 'https://localhost:5001/hubs/',
   minDate: '0001-01-01T00:00:00'
 };

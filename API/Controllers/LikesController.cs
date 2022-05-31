@@ -22,7 +22,7 @@ namespace API.Controllers
 
         }
 
-        [HttpPost("{username}")] //...api/likes/username
+        [HttpPost("{username}")]
         public async Task<ActionResult> Addlike(string username)
         {
             var sourceUserId = User.GetUserId();
@@ -52,7 +52,7 @@ namespace API.Controllers
             return BadRequest("Failed to like user");
         }
 
-        [HttpDelete("{username}")] //...api/likes/username
+        [HttpDelete("{username}")]
         public async Task<ActionResult> DeleteLike(string username)
         {
             var sourceUserId = User.GetUserId();

@@ -4,7 +4,6 @@
   </div>
   <div class="col-8">
     <div class="alert alert-warning m-0 py-1" *ngIf="editForm.dirty">
-      <!-- Show alert when form is dirty - means that it was provided with some changes -->
       <strong>Warning!</strong> You have made changes. Any unsaved data will be
       lost
     </div>
@@ -36,7 +35,6 @@
           form="editForm"
           class="btn btn-lg btn-success m-1"
         >
-          <!-- disable button when editForm is not dirty-->
           Save changes
         </button>
       </div>
@@ -46,7 +44,6 @@
     <tabset>
       <tab heading="About {{ member.knownAs }}" id="tab1" class="pb-2">
         <form #editForm="ngForm" id="editForm" (ngSubmit)="updateMember()">
-          <!-- because Sabechanges is submit button. We add Id to connect with Save changes btn-->
           <div class="form-group mt-2">
             <h4>Description</h4>
             <textarea
@@ -56,7 +53,6 @@
               rows="5"
               spellcheck="false"
             ></textarea>
-            <!-- I ve got an issue with name. It was 'description' and method reset in component set to null member.introduction-->
           </div>
           <div class="form-group mt-3">
             <h4>Looking For</h4>

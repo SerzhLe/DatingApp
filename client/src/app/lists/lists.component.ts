@@ -11,7 +11,7 @@ import { MembersService } from '../_services/members.service';
   styleUrls: ['./lists.component.css']
 })
 export class ListsComponent implements OnInit {
-  members: Partial<Member[]>; //each property in Member will be optional - because we do not return the whole member from get likes
+  members: Partial<Member[]>;
   pagination: Pagination;
   likesParams: LikesParams;
   loading = false;

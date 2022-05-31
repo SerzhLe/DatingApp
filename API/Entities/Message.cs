@@ -11,7 +11,6 @@ namespace API.Entities
         public int SenderId { get; set; }
         public string SenderUserName { get; set; }
 
-        //these properties define relationships between message and appusers - one message can have one sender and one recipient
         public AppUser Sender { get; set; }
         public int RecipientId { get; set; }
         public string RecipientUserName { get; set; }
@@ -19,7 +18,6 @@ namespace API.Entities
         public string Content { get; set; }
         public DateTime? MessageRead { get; set; }
         public DateTime MessageSent { get; set; } = DateTime.UtcNow;
-        //if sender delete message - will ask if delete the message in recipient - if yes - then will delete message from the server
         public bool DeleteBySender { get; set; }
         public bool DeletedByRecipient { get; set; }
     }

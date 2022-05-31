@@ -13,10 +13,13 @@ import { PresenceService } from './presence.service';
 })
 export class AccountService {
   private baseUrl = environment.apiUrl;
-  private currentUserSource = new ReplaySubject<User>(1); //buffer for storing User object - 1 amount - size of buffer
-  currentUser$ = this.currentUserSource.asObservable();//as it will be an observable - it should have '$' at the end
+  private currentUserSource = new ReplaySubject<User>(1);
+  currentUser$ = this.currentUserSource.asObservable();
 
-  constructor(private http: HttpClient, private memberService: MembersService, private presenceService: PresenceService, private messageService: MessageService) { }
+  constructor(private http: HttpClient, 
+    private memberService: MembersService, 
+    private presenceService: PresenceService, 
+    private messageService: MessageService) { }
 
   login(model: any) {
     return this.http.post(this.baseUrl + 'account/login', model).pipe(
@@ -60,13 +63,7 @@ export class AccountService {
   }
 
   getDecodedToken(token: string) {
-    return JSON.parse(atob(token.split('.')[1])); //returning the payload of token
-    //atob - decode string, btoa - encode. Only signature of token is enctypted!
+    return JSON.parse(atob(token.split('.')[1])); 
   }
 
 }
-
-//Services are:
-//1) injectable - you can inject them in angular components
-//2) singelton - data stored in services (such as 'baseUrl') will be disposed ONLY when web app is closed (on contrast - when you move from
-// one component to another - first component is destroyed)

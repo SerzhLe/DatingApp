@@ -17,9 +17,9 @@ namespace API.Data.EntityConfigurations
 
             builder
                 .HasOne(s => s.SourceUser)
-                .WithMany(l => l.LikedUsers) //one SourceUser has many liked users (l = AppUser)
+                .WithMany(l => l.LikedUsers)
                 .HasForeignKey(s => s.SourceUserId)
-                .OnDelete(DeleteBehavior.Cascade); //if using SQL-Server change DeleteBehavior to NoAction!
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasOne(l => l.LikedUser)

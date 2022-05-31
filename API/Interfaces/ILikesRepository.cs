@@ -15,7 +15,6 @@ namespace API.Interfaces
         Task<AppUser> GetUserWithLikesAsync(int userId);
 
         Task<PagedList<LikeDto>> GetUserLikesAsync(LikesParams likesParams);
-        //method will return likes of a user or likes that user has based on predicate value
 
         Task<IEnumerable<UserLike>> GetAllUserLikesAsync(string predicate, int userId);
     }

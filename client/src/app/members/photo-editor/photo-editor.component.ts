@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FileUploader, FileUploadModule } from 'ng2-file-upload';
+import { Component, Input, OnInit, Output } from '@angular/core';
+import { FileUploader } from 'ng2-file-upload';
 import { Member } from 'src/app/_models/member';
 import { environment } from 'src/environments/environment';
 import { AccountService } from 'src/app/_services/account.service';
@@ -46,11 +46,10 @@ export class PhotoEditorComponent implements OnInit {
       allowedFileType: ['image'],
       removeAfterUpload: true,
       autoUpload: false,
-      maxFileSize: 10 * 1024 * 1024 //10 mb = 10485760 bytes
+      maxFileSize: 10 * 1024 * 1024
     });
 
-    this.uploader.onAfterAddingFile = (file) => { //if we did not supply this config - we would need to adjust configuration to CORS on back-end
-      //we are sending the credentials by Bearer in authToken
+    this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     }
 
@@ -73,7 +72,7 @@ export class PhotoEditorComponent implements OnInit {
     if (photo) {
       this.memberService.makeMainPhoto(photo.id).subscribe(() => {
         this.user.photoUrl = photo.url;
-        this.accountService.setCurrentUser(this.user); //because our user and member HAVE references on the global users and members
+        this.accountService.setCurrentUser(this.user);
         this.member.photoUrl = photo.url;
 
         this.member.photos.forEach(p => {

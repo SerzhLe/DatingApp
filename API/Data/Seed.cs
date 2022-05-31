@@ -14,7 +14,6 @@ namespace API.Data
     public class Seed
     {
         public static async Task SeedUsers(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
-        //we can user UserManager for working with users and RoleManager for working with role
         {
             if (await userManager.Users.AnyAsync()) return;
 
@@ -39,11 +38,9 @@ namespace API.Data
                 user.UserName = user.UserName.ToLower();
 
                 await userManager.CreateAsync(user, user.UserName + "1$A");
-                //second is password - it also requires requirements that we specify in identity extension
 
                 await userManager.AddToRoleAsync(user, "Member");
             }
-            //user manager takes care of saving changes to db
 
             var admin = new AppUser
             {

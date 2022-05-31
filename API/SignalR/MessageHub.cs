@@ -58,7 +58,7 @@ namespace API.SignalR
             var group = await RemoveFromGroup();
             if (!group.Connections.Any(c => c.UserName == Context.User.GetCurrentUserName()))
                 await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
-            //when user move disconnects - signalR automatically remove user from group
+
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -82,9 +82,6 @@ namespace API.SignalR
                 Content = createMessageDto.Content
             };
 
-            //we created two entities in db and we are tracking connection id in groups in db and save in connections usernames
-            //this is because we want to track if specified user has connected to group - if yes - then track the messages read
-            //db needed because we cannot actually take username of current connection id
             var groupName = GetGroupName(sender.UserName, recipient.UserName);
 
             var group = await _unitOfWork.MessageRepository.GetMessageGroup(groupName);
@@ -100,11 +97,6 @@ namespace API.SignalR
                 if (recipientconnectionIds != null)
                 {
                     await _presenceHub.Clients.Clients(recipientconnectionIds)
-                    //Clients are context of ONLY message hub! But we need access to presence hub to notify recipient user
-                    //await Clients.All
-                    //     .GroupExcept(groupName, group.Connections
-                    //         .Where(c => c.UserName == username)
-                    //         .Select(c => c.ConnectionId))
                         .SendAsync("NotifyAboutNewMessage", sender.UserName);
                 }
             }
@@ -151,7 +143,7 @@ namespace API.SignalR
 
         private string GetGroupName(string caller, string other)
         {
-            var stringComparer = string.CompareOrdinal(caller, other) > 0; //compare based on alphabetic
+            var stringComparer = string.CompareOrdinal(caller, other) > 0;
 
             return stringComparer ? $"{other}-{caller}" : $"{caller}-{other}";
         }

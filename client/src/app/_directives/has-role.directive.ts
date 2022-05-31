@@ -4,13 +4,12 @@ import { User } from '../_models/user';
 import { AccountService } from '../_services/account.service';
 
 @Directive({
-  selector: '[appHasRole]' //*appHasRole='["Admin", "Moderator"]'
+  selector: '[appHasRole]'
 })
 export class HasRoleDirective implements OnInit {
   @Input() appHasRole: string[];
   user: User;
 
-  //when you need to programatically add or remove DOM elemenet - use ViewContainerRef
   constructor(private viewContainerRef: ViewContainerRef, private templateRef: TemplateRef<any>, 
     private accountService: AccountService) { 
       this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);

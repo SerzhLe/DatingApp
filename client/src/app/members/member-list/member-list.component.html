@@ -1,13 +1,11 @@
 <div class="text-center mt-3">
   <h2>Your matches - {{ pagination?.totalItems }} found</h2>
-  <!-- Angular will construct html template before we receive the data-->
 </div>
 
 <div class="container mt-3">
   <form #form="ngForm" (ngSubmit)="applyFilters()" autocomplete="off">
     <div class="filter-form d-flex align-items-end justify-content-center">
       <div class="age-and-descending-form">
-        <!-- Age From -->
         <div class="form-group me-3">
           <label class="mb-1 age-label">Age from: </label>
           <input
@@ -20,7 +18,6 @@
           />
         </div>
 
-        <!-- Order By Descending -->
         <div class="form-check form-switch mt-2">
           <input
             class="form-check-input"
@@ -35,7 +32,6 @@
         </div>
       </div>
 
-      <!-- Age To -->
       <div class="form-group me-3">
         <label class="mb-1 age-label">Age to: </label>
         <input
@@ -47,7 +43,7 @@
           max="99"
         />
       </div>
-      <!-- Gender -->
+
       <div class="form-group me-3">
         <label class="control-label mb-1">Gender:</label>
         <div *ngFor="let gender of genderList" class="form-check">
@@ -64,7 +60,6 @@
         </div>
       </div>
 
-      <!-- Order By -->
       <div class="form-group me-3">
         <label for="orderBySelect" class="form-label me-1">Order By: </label>
         <select

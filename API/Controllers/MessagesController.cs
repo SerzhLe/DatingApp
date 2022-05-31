@@ -53,7 +53,6 @@ namespace API.Controllers
             return BadRequest("Failed to create message");
         }
 
-        //be below httppost
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesForUser([FromQuery] MessageParams messageParams)
         {

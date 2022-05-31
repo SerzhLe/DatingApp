@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    //Error Handling
+
     public class BuggyController : BaseApiController
     {
         private readonly DataContext _context;

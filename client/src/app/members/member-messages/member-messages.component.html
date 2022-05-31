@@ -10,7 +10,6 @@
       class="chat"
       [scrollTop]="chat.scrollHeight"
     >
-      <!-- FOR HAVING SCROLL AT BOTTOM -->
       <li
         class="message"
         *ngFor="let message of messageService.messageThread$ | async"

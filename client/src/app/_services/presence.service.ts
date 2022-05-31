@@ -19,25 +19,20 @@ export class PresenceService {
   unreadMessagesCountSource = new BehaviorSubject<number>(0);
   unreadMessagesCount$ = this.unreadMessagesCountSource.asObservable();
 
-  //when user go to another browser or close window - signalR automatically disconnet user
-  //we need only conttrol disconnection in logout function
   constructor(private toastr: ToastrService, private router: Router) { }
 
-  //we cannot use our jwt.interceptor, so we will pass user's token to query string
-  //it won't be http request 
   createHubConnection(user: User) {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'presence', {
-      accessTokenFactory: () => user.token //pass token
+      accessTokenFactory: () => user.token
     })
-      .withAutomaticReconnect() //if user lost connection due to low internet - it will automatically reconnect
-      .build(); //creates a connection
+      .withAutomaticReconnect() 
+      .build();
 
     this.hubConnection
       .start()
       .catch(error => console.log(error));
 
-      //here we register methods that will be called by server when user connect and disconnect from hub
     this.hubConnection.on('UserIsOnline', username => {
       this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
         this.onlineUsersSource.next([...usernames, username]);

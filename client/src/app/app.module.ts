@@ -61,18 +61,17 @@ import { ConfirmDialogComponent } from './modals/confirm-dialog/confirm-dialog.c
     ConfirmDialogComponent
   ],
   imports: [ 
-  //problem -- too much imports will be here so we can place modules such as Forms, Animations into another separate file and import it here
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    FormsModule, //forms in Angular
-    SharedModule, //this modul consists of components
+    FormsModule,
+    SharedModule,
     ReactiveFormsModule,
     ButtonsModule
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}, //Now each error will be handled by ErrorInterceptor
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true}
   ],

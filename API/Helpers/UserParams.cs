@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace API.Helpers
 {
-    //these params are in query string of http request
     public class UserParams : PaginationParams
     {
         public string CurrentUserName { get; set; }

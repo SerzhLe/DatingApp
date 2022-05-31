@@ -30,9 +30,9 @@ export class NavComponent implements OnInit {
 
     this.accountService.login(this.model).subscribe({
       next: response => {
-        this.router.navigateByUrl('/members'); //navigate to members element when logged in
+        this.router.navigateByUrl('/members');
       }
-    }); //if returns Observable - we need subscribe to apply changes
+    });
   }
 
   logout() {

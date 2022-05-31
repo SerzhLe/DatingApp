@@ -29,23 +29,23 @@ namespace API.Data.Repositories
             var users = _context.Users.AsQueryable();
             var likes = _context.Likes.AsQueryable();
 
-            //EF is smart enough to recognize that here is join query needed
-            if (likesParams.Predicate == "liked") //return user's likes
+
+            if (likesParams.Predicate == "liked")
             {
                 likes = likes.Where(like => like.SourceUserId == likesParams.UserId);
-                users = likes.Select(like => like.LikedUser); //select all liked users from list of likes - join query
+                users = likes.Select(like => like.LikedUser);
             }
 
             if (likesParams.Predicate == "likedBy")
             {
                 likes = likes.Where(like => like.LikedUserId == likesParams.UserId);
-                users = likes.Select(like => like.SourceUser); //select all source users from list of likes that liked this logged in user    
+                users = likes.Select(like => like.SourceUser);
             }
 
             users = users.OrderBy(u => u.UserName.ToLower());
 
             var likers = users.Select(u => new LikeDto()
-            { //did not use AutoMapper because of diversity
+            {
                 Id = u.Id,
                 UserName = u.UserName,
                 Age = u.DateOfBirth.CalculateAge(),
@@ -57,7 +57,7 @@ namespace API.Data.Repositories
             return await PagedList<LikeDto>.CreateAsync(likers, likesParams.PageNumber, likesParams.PageSize);
         }
 
-        public async Task<AppUser> GetUserWithLikesAsync(int userId) //user and users that he/she liked
+        public async Task<AppUser> GetUserWithLikesAsync(int userId)
         {
             return await _context.Users.Include(u => u.LikedUsers).SingleOrDefaultAsync(u => u.Id == userId);
         }
@@ -66,7 +66,7 @@ namespace API.Data.Repositories
         {
             var likes = _context.Likes.AsQueryable();
 
-            if (predicate == "liked") //return user's likes
+            if (predicate == "liked")
             {
                 likes = likes.Where(like => like.SourceUserId == userId);
             }

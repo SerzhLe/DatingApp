@@ -16,12 +16,11 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
 import { MemberDetailsResolver } from './_resolvers/member-details.resolver';
 
 const routes: Routes = [
-  {path: '', component: HomeComponent}, //when we browser to https://localhost:4200 - it will see the HomeComponent
-  //make an general rule for all these components
+  {path: '', component: HomeComponent}, 
   {path: '', runGuardsAndResolvers: 'always', canActivate: [AuthGuard], children: [
     {path: 'members', component: MemberListComponent},
-    {path: 'members/:username', component: MemberDetailComponent, resolve: {member: MemberDetailsResolver}}, //.../members/(can be 1, 2, or 3...)
-    {path: 'member/edit', component: MemberEditComponent, canDeactivate: [PreventUnsavedChangesGuard]}, //member/edit to avoid confusion with members/username
+    {path: 'members/:username', component: MemberDetailComponent, resolve: {member: MemberDetailsResolver}}, 
+    {path: 'member/edit', component: MemberEditComponent, canDeactivate: [PreventUnsavedChangesGuard]}, 
     {path: 'lists', component: ListsComponent},
     {path: 'messages', component: MessagesComponent},
     {path: 'admin-panel', component: AdminPanelComponent, canActivate: [AdminGuard]},
@@ -29,7 +28,7 @@ const routes: Routes = [
   {path: 'errors', component: TestErrorsComponent},
   {path: 'not-found', component: NotFoundComponent},
   {path: 'server-error', component: ServerErrorComponent},
-  {path: '**', component: NotFoundComponent, pathMatch: 'full'}, //when users does not write anything in this array - then redirect to ** HomeComponent
+  {path: '**', component: NotFoundComponent, pathMatch: 'full'}, 
 ];
 
 @NgModule({

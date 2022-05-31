@@ -18,7 +18,7 @@ import { PresenceService } from 'src/app/_services/presence.service';
   styleUrls: ['./member-detail.component.css']
 })
 export class MemberDetailComponent implements OnInit, OnDestroy {
-  @ViewChild('memberTabs', {static: true}) memberTabs: TabsetComponent; //get tabset component to display messages chilc based on condition
+  @ViewChild('memberTabs', {static: true}) memberTabs: TabsetComponent;
   member: Member;
   galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
@@ -33,8 +33,7 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
       public accountService: AccountService,
       private router: Router) {
          this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.loggedInUser = user);
-        // //explained in 235 record
-        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+         this.router.routeReuseStrategy.shouldReuseRoute = () => false;
        }
 
   ngOnDestroy(): void {
@@ -42,15 +41,9 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.data.subscribe(data => { //we get data from resolver
+    this.route.data.subscribe(data => { 
       this.member = data.member;
     });
-
-    //Here is a problem - when we load this component - member is undefined and angular show an error when we want to access member property in html
-    //then it load member and should after loading show member details - we need to add condition if the members exists - only after that display member details
-    //another issue with If condition of member - we cannot get our tab form before member is loaded - using resolver to get data of member
-    //in order to remove condition for waiting member 
-
 
     this.route.queryParams.subscribe(params => {
       params.tab ? this.selectTab(params.tab) : this.selectTab(0); 
@@ -82,9 +75,6 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     ];
 
     this.galleryImages = this.getImages();
-
-    //если сюда поместить метод getImages() - система не получит юзера во время выполнения этого метода потому что запросы в бд
-    //асинхронные и мы не ждем пока выполниться метод load.Members и сразу выполняем getImages()
   }
 
   getImages() : NgxGalleryImage[] {
@@ -123,6 +113,6 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   }
 
   selectTab(tabId: number) {
-    this.memberTabs.tabs[tabId].active = true; //active tab
+    this.memberTabs.tabs[tabId].active = true;
   }
 }

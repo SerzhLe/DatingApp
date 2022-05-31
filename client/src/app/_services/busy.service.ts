@@ -5,13 +5,13 @@ import { NgxSpinnerService } from 'ngx-spinner';
   providedIn: 'root'
 })
 export class BusyService {
-  busyRequestCount = 0; //because at one time there is a possibility to have multiple requests
+  busyRequestCount = 0;
 
   constructor(private spinnerService: NgxSpinnerService) { }
 
   busy() {
     this.busyRequestCount++;
-    this.spinnerService.show(undefined, { //no name for spinner
+    this.spinnerService.show(undefined, {
       color: 'rgba(232,50,131,0.8)',
       bdColor: 'rgba(255,255,255,0)',
       type: 'square-jelly-box'

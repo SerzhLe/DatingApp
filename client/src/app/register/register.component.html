@@ -1,15 +1,11 @@
-<!-- After adding validation to our inputs the code size was veru large, so there was a necessity to build reusable text input -->
-
 <form
   [formGroup]="registerForm"
   (ngSubmit)="registerForm.valid && register()"
   autocomplete="off"
   class="mb-2"
 >
-  <!-- ngSUbmit has double condition because even though we disable button - we can press enter and submit the form anyway-->
   <h2 class="text-center">Sign up</h2>
 
-  <!-- Gender -->
   <div class="form-group text-center">
     <label class="control-label me-1">Gender:</label>
     <div class="form-check">
@@ -37,52 +33,44 @@
     </div>
   </div>
 
-  <!-- Username -->
   <app-text-input
     [formControl]="registerForm.controls['username']"
     [label]="'Username'"
   ></app-text-input>
 
-  <!-- Known As -->
   <app-text-input
     [formControl]="registerForm.controls['knownAs']"
     [label]="'Known As'"
   ></app-text-input>
 
-  <!-- Date of Birth -->
   <app-date-input
     [formControl]="registerForm.controls['dateOfBirth']"
     [label]="'Date Of Birth'"
     [maxDate]="maxDate"
   ></app-date-input>
 
-  <!-- City  -->
   <app-text-input
     [formControl]="registerForm.controls['city']"
     [label]="'City'"
   ></app-text-input>
 
-  <!-- Country  -->
   <app-text-input
     [formControl]="registerForm.controls['country']"
     [label]="'Country'"
   ></app-text-input>
 
-  <!-- Password -->
   <app-text-input
     [formControl]="registerForm.controls['password']"
     [label]="'Password'"
     [type]="'password'"
   ></app-text-input>
 
-  <!-- Confirm password -->
   <app-text-input
     [formControl]="registerForm.controls['confirmPassword']"
     [label]="'Confirm Password'"
     [type]="'password'"
   ></app-text-input>
 
-  <!-- Server errors - small chance to get them - but it is a guarantee that user is aware of errors -->
   <div class="row" *ngIf="validationErrors.length > 0">
     <ul>
       <li *ngFor="let error of validationErrors">

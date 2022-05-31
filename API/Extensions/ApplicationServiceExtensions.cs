@@ -16,18 +16,13 @@ namespace API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-            //!!!we use add services if we need to use this classes as dependency injection!!!
+            services.AddSingleton<PresenceTracker>();
 
-            services.AddSingleton<PresenceTracker>();//we create ONE object of presence tracker for all API calls!
-
-            //we add configurations and strongly typed keys in cloudinary settings - we need configure this in that way
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
-            //due to its configuration - we may get access to all properties in appsettings.json via class CloudinarySettings
 
-            services.AddScoped<ITokenService, TokenService>(); //add specific service and it disposes when specific http request ends
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
 
-            //instead of all repositories as services we will use unit of work as service
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<LogUserActivity>();
 

@@ -18,21 +18,18 @@ export class MembersService {
 
   loggedInMember: Member;
 
-  memberCache = new Map(); //like a dictionary: key - value pair
+  memberCache = new Map();
   private key: string;
   userParams: UserParams;
 
   constructor(private http: HttpClient) { }
 
-  //The purpose of these methods is send a request one time to get the data and then store it in properties
-  //This is made to prevent send http request each time when user click on link
   getMembers(userParams: UserParams) {
     this.key = Object.values(userParams).join('-');
     var response = this.memberCache.get(this.key);
     
     if(response) return of(response);
 
-    //caching based on keys - every query has its own values in userParams - based on this keys we will send the data from memory
     let params = getPaginationHeader(userParams.pageNumber, userParams.pageSize);
 
     params = params.append('minAge', userParams.minAge.toString());
@@ -41,7 +38,6 @@ export class MembersService {
     params = params.append('orderBy', userParams.orderBy);
     params = params.append('orderIsDescending', userParams.orderIsDescending);
 
-    //when we just http.get - then we just get response body, when add 'observe': 'response' -  we get all http response and add params
     return getPaginatedResult<Member[]>(this.baseUrl + 'users', params, this.http).pipe(
       map(result => {
         this.memberCache.set(this.key, result);

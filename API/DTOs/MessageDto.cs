@@ -19,7 +19,6 @@ namespace API.DTOs
         public DateTime? MessageRead { get; set; }
         public DateTime MessageSent { get; set; }
 
-        //we do not want to send back to client these properties but we need to access them 
         [JsonIgnore]
         public bool DeleteBySender { get; set; }
 
