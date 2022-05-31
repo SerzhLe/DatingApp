@@ -15,9 +15,11 @@ namespace API.Data
     {
         public static async Task SeedUsers(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
-            if (await userManager.Users.AnyAsync()) return;
+            if (await userManager.Users.AnyAsync()) throw new ArgumentException("Users are not empty");
 
             var userData = await File.ReadAllTextAsync("userSeedData.json");
+
+            if (userData == null) throw new ArgumentNullException("String is null");
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
             if (users == null) throw new NullReferenceException("Seed data is null");
 
