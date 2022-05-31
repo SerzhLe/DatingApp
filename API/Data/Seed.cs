@@ -17,9 +17,9 @@ namespace API.Data
         {
             if (await userManager.Users.AnyAsync()) return;
 
-            var userData = await File.ReadAllTextAsync(@"Data/userSeedData.json");
+            var userData = await File.ReadAllTextAsync("userSeedData.json");
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
-            if (users == null) return;
+            if (users == null) throw new NullReferenceException("Seed data is null");
 
             var roles = new List<AppRole>
             {
