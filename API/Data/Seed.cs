@@ -20,7 +20,7 @@ namespace API.Data
             var userData = await File.ReadAllTextAsync(@"Data/Seed_Data/userSeedData.json");
 
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
-            if (users == null) return;
+            //if (users == null) return;
 
             var roles = new List<AppRole>
             {
@@ -29,19 +29,33 @@ namespace API.Data
                 new AppRole{Name = "Moderator"}
             };
 
+            var usersNew = new List<AppUser>
+            {
+                new AppUser {DateOfBirth = new DateTime(1999, 4, 23), KnownAs = "Margo", Gender = "female", City = "Kharkiv", Country = "Ukraine", UserName = "margo"},
+                new AppUser {DateOfBirth = new DateTime(1999, 4, 23), KnownAs = "Juliet", Gender = "female", City = "Kharkiv", Country = "Ukraine", UserName = "juliet"},
+                new AppUser {DateOfBirth = new DateTime(1999, 4, 23), KnownAs = "Karol", Gender = "female", City = "Kharkiv", Country = "Ukraine", UserName = "karol"},
+            };
+
             foreach (var role in roles)
             {
                 await roleManager.CreateAsync(role);
             }
 
-            foreach (var user in users)
+            foreach (var user in usersNew)
             {
-                user.UserName = user.UserName.ToLower();
-
                 await userManager.CreateAsync(user, user.UserName + "1$A");
 
                 await userManager.AddToRoleAsync(user, "Member");
             }
+
+            // foreach (var user in users)
+            // {
+            //     user.UserName = user.UserName.ToLower();
+
+            //     await userManager.CreateAsync(user, user.UserName + "1$A");
+
+            //     await userManager.AddToRoleAsync(user, "Member");
+            // }
 
             var admin = new AppUser
             {
