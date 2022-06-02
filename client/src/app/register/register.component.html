@@ -35,12 +35,14 @@
 
   <app-text-input
     [formControl]="registerForm.controls['username']"
-    [label]="'Username'"
+    [label]="'Nickname'"
+    patternError="only English letters or/and numbers"
   ></app-text-input>
 
   <app-text-input
     [formControl]="registerForm.controls['knownAs']"
-    [label]="'Known As'"
+    [label]="'Real name'"
+    patternError="at least one English letter first, then space, hyphen or letters"
   ></app-text-input>
 
   <app-date-input
@@ -52,24 +54,26 @@
   <app-text-input
     [formControl]="registerForm.controls['city']"
     [label]="'City'"
+    patternError="at least one English letter first, then space, hyphen or letters"
   ></app-text-input>
 
   <app-text-input
     [formControl]="registerForm.controls['country']"
     [label]="'Country'"
+    patternError="at least one English letter first, then space, hyphen or letters"
   ></app-text-input>
 
-  <app-text-input
+  <app-password-input
     [formControl]="registerForm.controls['password']"
     [label]="'Password'"
-    [type]="'password'"
-  ></app-text-input>
+    [id]="'password'"
+  ></app-password-input>
 
-  <app-text-input
+  <app-password-input
     [formControl]="registerForm.controls['confirmPassword']"
     [label]="'Confirm Password'"
-    [type]="'password'"
-  ></app-text-input>
+    [id]="'confirmPassword'"
+  ></app-password-input>
 
   <div class="row" *ngIf="validationErrors.length > 0">
     <ul>

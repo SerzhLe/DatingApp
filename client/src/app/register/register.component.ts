@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, NgControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { NavComponent } from '../nav/nav.component';
@@ -15,10 +15,10 @@ export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   maxDate: Date;
   validationErrors: string[] = [];
+  pattern = '[a-zA-Z0-9]*';
 
   constructor(
     private accountService: AccountService,
-    private toastr: ToastrService,
     private router: Router,
     private fb: FormBuilder
     ) { }
@@ -32,11 +32,11 @@ export class RegisterComponent implements OnInit {
   initializeForm() {
     this.registerForm = this.fb.group({
       gender: ['male'],
-      username: ['', Validators.required],
-      knownAs: ['', Validators.required],
+      username: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9]*$')]],
+      knownAs: ['', [Validators.required, Validators.pattern('^[A-Za-z]+[A-Za-z- ]*$')]],
       dateOfBirth: ['', Validators.required],
-      city: ['', Validators.required],
-      country: ['', Validators.required],
+      city: ['', [Validators.required, Validators.pattern('^[A-Za-z]+[A-Za-z- ]*$')]],
+      country: ['', [Validators.required, Validators.pattern('^[A-Za-z]+[A-Za-z- ]*$')]],
       password: ['', [
         Validators.required,
         Validators.minLength(4),

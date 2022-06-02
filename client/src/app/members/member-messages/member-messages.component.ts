@@ -24,9 +24,8 @@ export class MemberMessagesComponent implements OnInit {
   }
 
   sendMessage() {
-    this.messageService.createMessage(this.message).then(() => {
-      this.message.content = '';
-    })
+    this.messageService.createMessage(this.message);
+    this.message.content = '';
   }
 
 }

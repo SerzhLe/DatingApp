@@ -6,6 +6,7 @@
     ></i>
     <input
       type="text"
+      readonly
       [class.is-valid]="ngControl.touched && ngControl.valid"
       [class.is-invalid]="ngControl.touched && !ngControl.valid"
       class="form-control"
@@ -14,6 +15,7 @@
       bsDatepicker
       [bsConfig]="bsConfig"
       [maxDate]="maxDate"
+      [minDate]="minDate"
     />
     <div class="valid-feedback">Success! You've done it.</div>
     <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">

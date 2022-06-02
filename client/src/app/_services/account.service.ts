@@ -18,8 +18,7 @@ export class AccountService {
 
   constructor(private http: HttpClient, 
     private memberService: MembersService, 
-    private presenceService: PresenceService, 
-    private messageService: MessageService) { }
+    private presenceService: PresenceService) { }
 
   login(model: any) {
     return this.http.post(this.baseUrl + 'account/login', model).pipe(

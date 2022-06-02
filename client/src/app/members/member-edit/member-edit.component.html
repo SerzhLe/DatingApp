@@ -11,7 +11,7 @@
   <div class="col-4 mt-3">
     <div class="card mb-1">
       <img
-        src="{{ member.photoUrl || '../../assets/user.png' }}"
+        src="{{ initialMember.photoUrl || '../../assets/user.png' }}"
         alt="{{ member.knownAs }}"
         class="card-img-top img-thumbnail p-1 profile-img"
       />
@@ -98,7 +98,7 @@
         </form>
       </tab>
       <tab heading="Edit Photos">
-        <app-photo-editor [member]="member"></app-photo-editor>
+        <app-photo-editor [member]="initialMember"></app-photo-editor>
       </tab>
     </tabset>
   </div>

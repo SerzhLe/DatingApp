@@ -15,7 +15,7 @@ import { MembersService } from 'src/app/_services/members.service';
 })
 export class MemberEditComponent implements OnInit {
   @ViewChild('editForm') editForm: NgForm;
-  private initialMember: Member;
+  initialMember: Member;
   member: Member;
   user: User;
 
@@ -38,7 +38,7 @@ export class MemberEditComponent implements OnInit {
   loadMember() {
     this.memberService.getLoggedInMember(this.user.userName).subscribe(member => {
       this.initialMember = member;
-      this.member = Object.assign({}, this.initialMember);
+      this.member = Object.assign({}, this.memberService.loggedInMember);
     });
   }
 
