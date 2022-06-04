@@ -61,13 +61,16 @@ export class RegisterComponent implements OnInit {
   }
 
   validatePassword(control: AbstractControl) : ValidationErrors | null {
-  const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/;
-    
-    if (!re.test(control?.value)) {
-      return { notValidPassword: true};
-    } 
+    if (/(?=.*[a-z])/.test(control.value) //at least ont small letter
+      && /(?=.*[A-Z])/.test(control.value) //at least one capital letter
+      && /(?=.*[0-9])/.test(control.value)  //at least one number
+      && /(?=.*[!@#\$%\^&\*])/.test(control.value) //at least one special character
+      && /^[a-zA-Z0-9!@#\$%\^&\*]*$/.test(control.value)  //containe ONLY all characters specified in []
+      ) {
+        return null;
+    }
 
-    return null;
+    return { notValidPassword: true};
   }
 
   register() {
