@@ -55,8 +55,8 @@
 <div class="row mt-3" *ngIf="messages?.length > 0">
   <table class="table table-hover message-table">
     <tr>
+      <th class="table-column-20 text-center">From / To</th>
       <th class="table-column-40 text-center">Message</th>
-      <th class="table-column-20">From / To</th>
       <th class="table-column-20">Sent / Received</th>
       <th class="table-column-20 text-center">Action</th>
     </tr>
@@ -71,9 +71,6 @@
       [queryParams]="{ tab: 3 }"
       class="message"
     >
-      <td class="text-center">
-        <p class="message-content">{{ message.content }}</p>
-      </td>
       <td>
         <div *ngIf="messageParams.container !== 'Outbox'" class="text-start">
           <img
@@ -83,7 +80,7 @@
           />
           <strong>{{ message.senderUserName | titlecase }}</strong>
         </div>
-        <div *ngIf="messageParams.container === 'Outbox'" class="text-start">
+        <div *ngIf="messageParams.container === 'Outbox'" class="text-center">
           <img
             class="rounded-circle user-avatar me-1"
             src="{{ message.recipientPhotoUrl || './assets/user.png' }}"
@@ -91,6 +88,9 @@
           />
           <strong>{{ message.recipientUserName | titlecase }}</strong>
         </div>
+      </td>
+      <td class="text-center">
+        <p class="message-content">{{ message.content }}</p>
       </td>
       <td class="text-start">{{ message.messageSent | timeago }}</td>
       <td class="text-center">

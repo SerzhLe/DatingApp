@@ -64,28 +64,23 @@
           </div>
         </div>
         <form
-          #loginForm="ngForm"
-          class="d-flex"
+          [formGroup]="loginForm"
           (ngSubmit)="login()"
           autocomplete="off"
+          class="d-flex"
           *ngIf="(accountService.currentUser$ | async) === null"
         >
-          <input
-            name="username"
-            [(ngModel)]="model.username"
-            class="form-control me-sm-2"
-            type="text"
-            placeholder="UserName"
-            required
-          />
-          <input
-            name="password"
-            [(ngModel)]="model.password"
-            class="form-control me-sm-2"
-            type="password"
-            placeholder="Password"
-            required
-          />
+          <app-login-input
+            [formControl]="loginForm.controls['username']"
+            [id]="'username'"
+            [label]="'Nickname'"
+          ></app-login-input>
+          <app-login-input
+            [formControl]="loginForm.controls['password']"
+            [id]="'loginPassword'"
+            [label]="'Password'"
+            [type]="'password'"
+          ></app-login-input>
           <button class="btn btn-success" type="submit">Login</button>
         </form>
       </div>

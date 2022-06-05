@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../_services/account.service';
@@ -11,15 +11,22 @@ import { PresenceService } from '../_services/presence.service';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-  @ViewChild('loginForm') loginForm: NgForm;
-  model: any = {};
+  loginForm: FormGroup;
   userName: string;
 
   constructor(public accountService: AccountService, 
-    private router: Router, private toastr: ToastrService, 
-    private presence: PresenceService) { }
+    private router: Router, private toastr: ToastrService,
+    private fb: FormBuilder, public presence: PresenceService) { }
 
   ngOnInit(): void {
+    this.initializeForm();
+  }
+
+  initializeForm() {
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    })
   }
 
   login() {
@@ -28,7 +35,7 @@ export class NavComponent implements OnInit {
       return;
     }
 
-    this.accountService.login(this.model).subscribe({
+    this.accountService.login(this.loginForm.value).subscribe({
       next: response => {
         this.router.navigateByUrl('/members');
       }

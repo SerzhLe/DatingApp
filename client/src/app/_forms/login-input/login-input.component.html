@@ -1,0 +1,23 @@
+<div class="form-group me-2 password-group">
+  <input
+    #loginType
+    id="{{ id }}"
+    [type]="type"
+    class="form-control me-1"
+    [formControl]="ngControl.control"
+    placeholder="{{ label }}"
+  />
+  <i
+    *ngIf="type === 'password'"
+    class="fa"
+    [ngClass]="{
+      'fa-eye-slash': isInputTypePassword,
+      'fa-eye': !isInputTypePassword,
+      'move-left': ngControl.touched || ngControl.valid
+    }"
+    (click)="
+      togglePasswordVisibility(id) &&
+        (isInputTypePassword = !isInputTypePassword)
+    "
+  ></i>
+</div>

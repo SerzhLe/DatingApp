@@ -10,8 +10,19 @@
   <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">
     Please, enter a {{ label }}
   </div>
-  <div *ngIf="ngControl.control.errors?.pattern" class="invalid-feedback">
-    Sorry, you must type here {{ patternError }}
+  <div
+    *ngIf="ngControl.control.errors?.canContainOnlyLettersAndNumbers"
+    class="invalid-feedback"
+  >
+    {{ ngControl.control.errors.canContainOnlyLettersAndNumbers.errorMessage }}
+  </div>
+  <div
+    *ngIf="ngControl.control.errors?.containOnlyLettersNumbersHyphenSpace"
+    class="invalid-feedback"
+  >
+    {{
+      ngControl.control.errors.containOnlyLettersNumbersHyphenSpace.errorMessage
+    }}
   </div>
   <div *ngIf="ngControl.control.errors?.minlength" class="invalid-feedback">
     {{ label }} must be at least

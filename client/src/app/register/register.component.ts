@@ -1,9 +1,10 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, NgControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
-import { NavComponent } from '../nav/nav.component';
 import { AccountService } from '../_services/account.service';
+import { GeneralValidators } from '../_validators/general.validators';
+import { PasswordValidators } from '../_validators/password.validators';
+import { UsernameValidators } from '../_validators/username.validators';
 
 @Component({
   selector: 'app-register',
@@ -14,8 +15,6 @@ export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter()
   registerForm: FormGroup;
   maxDate: Date;
-  validationErrors: string[] = [];
-  pattern = '[a-zA-Z0-9]*';
 
   constructor(
     private accountService: AccountService,
@@ -32,20 +31,20 @@ export class RegisterComponent implements OnInit {
   initializeForm() {
     this.registerForm = this.fb.group({
       gender: ['male'],
-      username: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9]*$')]],
-      knownAs: ['', [Validators.required, Validators.pattern('^[A-Za-z]+[A-Za-z- ]*$')]],
+      username: ['', [Validators.required, Validators.maxLength(10), UsernameValidators.containOnlyLettersAndNumbers]],
+      knownAs: ['', [Validators.required, Validators.maxLength(15), GeneralValidators.containLettersNumbersHyphenSpace]],
       dateOfBirth: ['', Validators.required],
-      city: ['', [Validators.required, Validators.pattern('^[A-Za-z]+[A-Za-z- ]*$')]],
-      country: ['', [Validators.required, Validators.pattern('^[A-Za-z]+[A-Za-z- ]*$')]],
+      city: ['', [Validators.required, GeneralValidators.containLettersNumbersHyphenSpace]],
+      country: ['', [Validators.required, GeneralValidators.containLettersNumbersHyphenSpace]],
       password: ['', [
         Validators.required,
         Validators.minLength(4),
         Validators.maxLength(8),
-        this.validatePassword
+        PasswordValidators.validatePassword
       ]],
       confirmPassword: ['', [
         Validators.required,
-        this.matchValues('password')
+        PasswordValidators.matchValues('password')
       ]]
     });
 
@@ -54,31 +53,9 @@ export class RegisterComponent implements OnInit {
     })
   }
 
-  matchValues(matchTo: string) : ValidatorFn {
-    return (control: AbstractControl) => {
-      return control?.value === control?.parent?.controls[matchTo].value ? null : { notMatching: true };
-    }
-  }
-
-  validatePassword(control: AbstractControl) : ValidationErrors | null {
-    if (/(?=.*[a-z])/.test(control.value) //at least ont small letter
-      && /(?=.*[A-Z])/.test(control.value) //at least one capital letter
-      && /(?=.*[0-9])/.test(control.value)  //at least one number
-      && /(?=.*[!@#\$%\^&\*])/.test(control.value) //at least one special character
-      && /^[a-zA-Z0-9!@#\$%\^&\*]*$/.test(control.value)  //containe ONLY all characters specified in []
-      ) {
-        return null;
-    }
-
-    return { notValidPassword: true};
-  }
-
   register() {
     this.accountService.register(this.registerForm.value).subscribe({
-      next: response => this.router.navigateByUrl('/members'),
-      error: error => {
-        this.validationErrors = error;
-      } 
+      next: response => this.router.navigateByUrl('/members')
     });
   }
 

@@ -10,3 +10,8 @@
     color: rgb(10, 229, 57);
 }
 
+.card-title {
+    font-size: 1.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+}

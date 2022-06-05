@@ -1,0 +1,11 @@
+.password-group {
+    position: relative;
+}
+
+
+i {
+    cursor: pointer;
+    position: absolute;
+    top: 1rem; 
+    right: 1rem;
+}
