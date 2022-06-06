@@ -17,6 +17,7 @@ namespace API.Data
         {
             if (await userManager.Users.AnyAsync()) return;
 
+            //change dob data
             var userData = await File.ReadAllTextAsync(@"Data/Seed_Data/userSeedData.json");
 
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
