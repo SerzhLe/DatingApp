@@ -11,7 +11,7 @@
           class="mb-1"
           *ngIf="(presence.onlineUsers$ | async).includes(member.userName)"
         >
-          <i class="fa fa-user-circle">Online now</i>
+          <i class="fa fa-user-circle online-icon">Online now</i>
         </div>
         <div>
           <strong>Location:</strong>
@@ -34,7 +34,7 @@
         <div class="d-flex align-items-center justify-content-center">
           <button class="btn btn-danger" (click)="selectTab(3)">Message</button>
           <i
-            class="fa fa-heart"
+            class="fa fa-heart like-icon"
             [ngClass]="{ liked: member.isLiked }"
             (click)="member.isLiked ? deleteLike() : addLike()"
           ></i>

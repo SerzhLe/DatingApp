@@ -1,15 +1,24 @@
-i {
+button {
+    width: 100%;
+}
+
+.like-icon {
     font-size: 2.3rem;
     margin: 0 1.5rem;
     cursor: pointer;
     opacity: 0.5;
 }
 
-button {
-    width: 100%;
+.online-icon {
+    color: #08fb08;
 }
 
-i:hover {
+.fa-user-circle:before {
+    content: "\f2bd";
+    margin-right: 0.3rem;
+}
+
+.like-icon:hover {
     color: var(--bs-primary);
     opacity: 1;
 }
